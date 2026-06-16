@@ -1,0 +1,18 @@
+В pkgconfig нужны библиотеки:
+- wayland-client
+- openssl
+- zstd
+- alsa
+- freetype
+- sqlite3
+- libz
+- fontconfig
+- protobuf
+
+Сборка:
+0. Поставить rust компилятор стабильной версии 1.93.
+1. Склонировать с Github репозиторий Zed. https://github.com/zed-industries/zed
+2. Переключиться на тег v0.180.4.
+3. Применить патч "0001-e2k-patch.patch" к корню репозитория "zed".
+5. Положить каталог "e2k_zed_crates" на одном уровне с каталогом "zed". (Не внутрь, а рядом).
+6. Сборка проводится командой "ZSTD_SYS_USE_PKG_CONFIG=1 cargo build --release" в корне каталога "zed".
