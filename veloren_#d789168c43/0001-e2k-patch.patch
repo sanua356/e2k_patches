@@ -1,0 +1,526 @@
+From d789168c43ee0fb6dd9cc97801b861fd44757f90 Mon Sep 17 00:00:00 2001
+From: sanua356 <sanek.pankratov356@gmail.com>
+Date: Tue, 16 Jun 2026 16:36:39 +0300
+Subject: [PATCH] e2k patch
+
+---
+ Cargo.lock              | 122 +++++++++++++++++++---------------------
+ Cargo.toml              |  13 ++++-
+ common/state/Cargo.toml |   2 +-
+ rust-toolchain          |   1 -
+ 4 files changed, 70 insertions(+), 68 deletions(-)
+ delete mode 100644 rust-toolchain
+
+diff --git a/Cargo.lock b/Cargo.lock
+index b208e7743a..fc3dd60e1a 100644
+--- a/Cargo.lock
++++ b/Cargo.lock
+@@ -206,7 +206,7 @@ version = "1.1.5"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+ checksum = "40c48f72fd53cd289104fc64099abca73db4166ad86ea0b4341abe65af83dadc"
+ dependencies = [
+- "windows-sys 0.61.2",
++ "windows-sys 0.60.2",
+ ]
+ 
+ [[package]]
+@@ -217,7 +217,7 @@ checksum = "291e6a250ff86cd4a820112fb8898808a366d8f9f58ce16d1f538353ad55747d"
+ dependencies = [
+  "anstyle",
+  "once_cell_polyfill",
+- "windows-sys 0.61.2",
++ "windows-sys 0.60.2",
+ ]
+ 
+ [[package]]
+@@ -807,7 +807,7 @@ checksum = "cb9f6e1368bd4621d2c86baa7e37de77a938adf5221e5dd3d6133340101b309e"
+ dependencies = [
+  "bitflags 2.10.0",
+  "polling",
+- "rustix 1.1.2",
++ "rustix 1.1.4",
+  "slab",
+  "tracing",
+ ]
+@@ -831,7 +831,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
+ checksum = "138efcf0940a02ebf0cc8d1eff41a1682a46b431630f4c52450d6265876021fa"
+ dependencies = [
+  "calloop 0.14.3",
+- "rustix 1.1.2",
++ "rustix 1.1.4",
+  "wayland-backend",
+  "wayland-client 0.31.11",
+ ]
+@@ -851,7 +851,7 @@ dependencies = [
+  "cap-primitives",
+  "cap-std",
+  "io-lifetimes",
+- "windows-sys 0.59.0",
++ "windows-sys 0.52.0",
+ ]
+ 
+ [[package]]
+@@ -862,7 +862,7 @@ checksum = "20a158160765c6a7d0d8c072a53d772e4cb243f38b04bfcf6b4939cfbe7482e7"
+ dependencies = [
+  "cap-primitives",
+  "cap-std",
+- "rustix 1.1.2",
++ "rustix 1.1.4",
+  "smallvec",
+ ]
+ 
+@@ -878,9 +878,9 @@ dependencies = [
+  "io-lifetimes",
+  "ipnet",
+  "maybe-owned",
+- "rustix 1.1.2",
++ "rustix 1.1.4",
+  "rustix-linux-procfs",
+- "windows-sys 0.59.0",
++ "windows-sys 0.52.0",
+  "winx",
+ ]
+ 
+@@ -903,7 +903,7 @@ dependencies = [
+  "cap-primitives",
+  "io-extras",
+  "io-lifetimes",
+- "rustix 1.1.2",
++ "rustix 1.1.4",
+ ]
+ 
+ [[package]]
+@@ -916,7 +916,7 @@ dependencies = [
+  "cap-primitives",
+  "iana-time-zone",
+  "once_cell",
+- "rustix 1.1.2",
++ "rustix 1.1.4",
+  "winx",
+ ]
+ 
+@@ -1712,7 +1712,7 @@ dependencies = [
+  "document-features",
+  "mio",
+  "parking_lot",
+- "rustix 1.1.2",
++ "rustix 1.1.4",
+  "signal-hook 0.3.18",
+  "signal-hook-mio",
+  "winapi",
+@@ -2011,7 +2011,7 @@ dependencies = [
+  "libc",
+  "option-ext",
+  "redox_users 0.5.2",
+- "windows-sys 0.61.2",
++ "windows-sys 0.60.2",
+ ]
+ 
+ [[package]]
+@@ -2385,7 +2385,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
+ checksum = "39cab71617ae0d63f51a36d69f866391735b51691dbda63cf6f96d042b63efeb"
+ dependencies = [
+  "libc",
+- "windows-sys 0.61.2",
++ "windows-sys 0.52.0",
+ ]
+ 
+ [[package]]
+@@ -2510,8 +2510,8 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
+ checksum = "0ce92ff622d6dadf7349484f42c93271a0d49b7cc4d466a936405bacbe10aa78"
+ dependencies = [
+  "cfg-if 1.0.4",
+- "rustix 1.1.2",
+- "windows-sys 0.59.0",
++ "rustix 1.1.4",
++ "windows-sys 0.52.0",
+ ]
+ 
+ [[package]]
+@@ -2726,8 +2726,8 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
+ checksum = "94e7099f6313ecacbe1256e8ff9d617b75d1bcb16a6fddef94866d225a01a14a"
+ dependencies = [
+  "io-lifetimes",
+- "rustix 1.1.2",
+- "windows-sys 0.59.0",
++ "rustix 1.1.4",
++ "windows-sys 0.52.0",
+ ]
+ 
+ [[package]]
+@@ -2899,7 +2899,7 @@ version = "1.1.0"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+ checksum = "1bd49230192a3797a9a4d6abe9b3eed6f7fa4c8a8a4947977c6f80025f92cbd8"
+ dependencies = [
+- "rustix 1.1.2",
++ "rustix 1.1.4",
+  "windows-link",
+ ]
+ 
+@@ -3757,7 +3757,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
+ checksum = "2285ddfe3054097ef4b2fe909ef8c3bcd1ea52a8f0d274416caebeef39f04a65"
+ dependencies = [
+  "io-lifetimes",
+- "windows-sys 0.59.0",
++ "windows-sys 0.52.0",
+ ]
+ 
+ [[package]]
+@@ -4028,9 +4028,8 @@ checksum = "db13adb97ab515a3691f56e4dbab09283d0b86cb45abd991d8634a9d6f501760"
+ 
+ [[package]]
+ name = "libc"
+-version = "0.2.178"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "37c93d8daa9d8a012fd8ab92f088405fb202ea0b6ab73ee2482ae66af4f42091"
++version = "0.2.184"
++source = "git+https://github.com/helce/libc?branch=devel_e2k#6abfd9c69ac275fffe636e4707bc19bc0bbaff89"
+ 
+ [[package]]
+ name = "libloading"
+@@ -4127,14 +4126,12 @@ checksum = "0717cef1bc8b636c6e1c1bbdefc09e6322da8a9321966e8928ef80d20f7f770f"
+ [[package]]
+ name = "linux-raw-sys"
+ version = "0.4.15"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "d26c52dbd32dccf2d10cac7725f8eae5296885fb5703b261f7d0a0739ec807ab"
++source = "git+https://github.com/helce/linux-raw-sys?branch=devel_e2k_0.4#d0038665cc5adf27e26d07e5d9ecac488d845349"
+ 
+ [[package]]
+ name = "linux-raw-sys"
+-version = "0.11.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "df1d3c3b53da64cf5760482273a98e575c651a67eec7f77df96b5b642de8f039"
++version = "0.12.1"
++source = "git+https://github.com/helce/linux-raw-sys?branch=devel_e2k#1555c7dee43aa0547c625cdd56b1c342f50867c4"
+ 
+ [[package]]
+ name = "litemap"
+@@ -4296,7 +4293,7 @@ version = "0.6.5"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+ checksum = "ad38eb12aea514a0466ea40a80fd8cc83637065948eb4a426e4aa46261175227"
+ dependencies = [
+- "rustix 1.1.2",
++ "rustix 1.1.4",
+ ]
+ 
+ [[package]]
+@@ -4574,8 +4571,7 @@ dependencies = [
+ [[package]]
+ name = "nix"
+ version = "0.24.3"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "fa52e972a9a719cecb6864fb88568781eb706bac2cd1d4f04a648542dbf78069"
++source = "git+https://github.com/helce/nix?tag=v0.24.3#0f35f4717fcc607986a7cf45207cb296597179dd"
+ dependencies = [
+  "bitflags 1.3.2",
+  "cfg-if 1.0.4",
+@@ -4695,7 +4691,7 @@ version = "0.50.3"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+ checksum = "7957b9740744892f114936ab4a57b3f487491bbeafaf8083688b16841a4240e5"
+ dependencies = [
+- "windows-sys 0.61.2",
++ "windows-sys 0.60.2",
+ ]
+ 
+ [[package]]
+@@ -5658,7 +5654,7 @@ dependencies = [
+  "concurrent-queue",
+  "hermit-abi",
+  "pin-project-lite",
+- "rustix 1.1.2",
++ "rustix 1.1.4",
+  "windows-sys 0.61.2",
+ ]
+ 
+@@ -6588,27 +6584,25 @@ dependencies = [
+ [[package]]
+ name = "rustix"
+ version = "0.38.44"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "fdb5bc1ae2baa591800df16c9ca78619bf65c0488b41b96ccec5d11220d8c154"
++source = "git+https://github.com/helce/rustix?branch=devel_e2k_0.38#6a1cd094d637a80648e967519868865a465d2a07"
+ dependencies = [
+  "bitflags 2.10.0",
+  "errno",
+  "libc",
+  "linux-raw-sys 0.4.15",
+- "windows-sys 0.59.0",
++ "windows-sys 0.52.0",
+ ]
+ 
+ [[package]]
+ name = "rustix"
+-version = "1.1.2"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "cd15f8a2c5551a84d56efdc1cd049089e409ac19a3072d5037a17fd70719ff3e"
++version = "1.1.4"
++source = "git+https://github.com/helce/rustix?branch=devel_e2k#a64f3722f385ced778684547353884b4a97d7652"
+ dependencies = [
+  "bitflags 2.10.0",
+  "errno",
+  "libc",
+- "linux-raw-sys 0.11.0",
+- "windows-sys 0.61.2",
++ "linux-raw-sys 0.12.1",
++ "windows-sys 0.52.0",
+ ]
+ 
+ [[package]]
+@@ -6618,7 +6612,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
+ checksum = "2fc84bf7e9aa16c4f2c758f27412dc9841341e16aa682d9c7ac308fe3ee12056"
+ dependencies = [
+  "once_cell",
+- "rustix 1.1.2",
++ "rustix 1.1.4",
+ ]
+ 
+ [[package]]
+@@ -6684,7 +6678,7 @@ dependencies = [
+  "security-framework",
+  "security-framework-sys",
+  "webpki-root-certs",
+- "windows-sys 0.61.2",
++ "windows-sys 0.52.0",
+ ]
+ 
+ [[package]]
+@@ -7303,7 +7297,7 @@ dependencies = [
+  "libc",
+  "log",
+  "memmap2 0.9.9",
+- "rustix 1.1.2",
++ "rustix 1.1.4",
+  "thiserror 2.0.17",
+  "wayland-backend",
+  "wayland-client 0.31.11",
+@@ -7435,6 +7429,7 @@ dependencies = [
+  "cfg-if 1.0.4",
+  "libc",
+  "psm",
++ "windows-sys 0.52.0",
+  "windows-sys 0.59.0",
+ ]
+ 
+@@ -7667,7 +7662,7 @@ dependencies = [
+  "fd-lock",
+  "io-lifetimes",
+  "rustix 0.38.44",
+- "windows-sys 0.59.0",
++ "windows-sys 0.52.0",
+  "winx",
+ ]
+ 
+@@ -7702,9 +7697,8 @@ dependencies = [
+ 
+ [[package]]
+ name = "target-lexicon"
+-version = "0.13.4"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "b1dd07eb858a2067e2f3c7155d54e929265c264e6f37efe3ee7a8d1b5a1dd0ba"
++version = "0.13.5"
++source = "git+https://github.com/helce/target-lexicon?branch=devel_e2k#7b4e97763baee275a2f488285a06e6bd5a4f853f"
+ 
+ [[package]]
+ name = "tempfile"
+@@ -7715,8 +7709,8 @@ dependencies = [
+  "fastrand",
+  "getrandom 0.3.4",
+  "once_cell",
+- "rustix 1.1.2",
+- "windows-sys 0.61.2",
++ "rustix 1.1.4",
++ "windows-sys 0.52.0",
+ ]
+ 
+ [[package]]
+@@ -8288,7 +8282,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
+ checksum = "2fb391ac70462b3097a755618fbf9c8f95ecc1eb379a414f7b46f202ed10db1f"
+ dependencies = [
+  "cc",
+- "windows-targets 0.52.6",
++ "windows-targets 0.48.5",
+ ]
+ 
+ [[package]]
+@@ -8334,7 +8328,7 @@ version = "1.6.3"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+ checksum = "97fee6b57c6a41524a810daee9286c02d7752c4253064d0b05472833a438f675"
+ dependencies = [
+- "cfg-if 1.0.4",
++ "cfg-if 0.1.10",
+  "rand 0.8.5",
+  "static_assertions",
+ ]
+@@ -9379,7 +9373,7 @@ dependencies = [
+  "postcard",
+  "pulley-interpreter",
+  "rayon",
+- "rustix 1.1.2",
++ "rustix 1.1.4",
+  "semver 1.0.27",
+  "serde",
+  "serde_derive",
+@@ -9445,7 +9439,7 @@ dependencies = [
+  "directories-next",
+  "log",
+  "postcard",
+- "rustix 1.1.2",
++ "rustix 1.1.4",
+  "serde",
+  "serde_derive",
+  "sha2",
+@@ -9522,7 +9516,7 @@ dependencies = [
+  "cc",
+  "cfg-if 1.0.4",
+  "libc",
+- "rustix 1.1.2",
++ "rustix 1.1.4",
+  "wasmtime-environ",
+  "wasmtime-internal-versioned-export-macros",
+  "windows-sys 0.61.2",
+@@ -9536,7 +9530,7 @@ checksum = "26647819bda4c1b91bdf97380216a289224d18e6b6fcbbbef2e049de2b75833c"
+ dependencies = [
+  "cc",
+  "object 0.37.3",
+- "rustix 1.1.2",
++ "rustix 1.1.4",
+  "wasmtime-internal-versioned-export-macros",
+ ]
+ 
+@@ -9624,7 +9618,7 @@ dependencies = [
+  "futures",
+  "io-extras",
+  "io-lifetimes",
+- "rustix 1.1.2",
++ "rustix 1.1.4",
+  "system-interface",
+  "thiserror 2.0.17",
+  "tokio",
+@@ -9697,7 +9691,7 @@ checksum = "673a33c33048a5ade91a6b139580fa174e19fb0d23f396dca9fa15f2e1e49b35"
+ dependencies = [
+  "cc",
+  "downcast-rs",
+- "rustix 1.1.2",
++ "rustix 1.1.4",
+  "scoped-tls",
+  "smallvec",
+  "wayland-sys 0.31.7",
+@@ -9726,7 +9720,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
+ checksum = "c66a47e840dc20793f2264eb4b3e4ecb4b75d91c0dd4af04b456128e0bdd449d"
+ dependencies = [
+  "bitflags 2.10.0",
+- "rustix 1.1.2",
++ "rustix 1.1.4",
+  "wayland-backend",
+  "wayland-scanner 0.31.7",
+ ]
+@@ -9771,7 +9765,7 @@ version = "0.31.11"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+ checksum = "447ccc440a881271b19e9989f75726d60faa09b95b0200a9b7eb5cc47c3eeb29"
+ dependencies = [
+- "rustix 1.1.2",
++ "rustix 1.1.4",
+  "wayland-client 0.31.11",
+  "xcursor",
+ ]
+@@ -10201,7 +10195,7 @@ checksum = "24d643ce3fd3e5b54854602a080f34fb10ab75e0b813ee32d00ca2b44fa74762"
+ dependencies = [
+  "either",
+  "env_home",
+- "rustix 1.1.2",
++ "rustix 1.1.4",
+  "winsafe",
+ ]
+ 
+@@ -10273,7 +10267,7 @@ version = "0.1.11"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+ checksum = "c2a7b1c03c876122aa43f3020e6c3c3ee5c05081c9a00739faf7503aeba10d22"
+ dependencies = [
+- "windows-sys 0.61.2",
++ "windows-sys 0.48.0",
+ ]
+ 
+ [[package]]
+@@ -10899,7 +10893,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
+ checksum = "3f3fd376f71958b862e7afb20cfe5a22830e1963462f3a17f49d82a6c1d1f42d"
+ dependencies = [
+  "bitflags 2.10.0",
+- "windows-sys 0.59.0",
++ "windows-sys 0.52.0",
+ ]
+ 
+ [[package]]
+@@ -11067,7 +11061,7 @@ dependencies = [
+  "libc",
+  "libloading 0.8.9",
+  "once_cell",
+- "rustix 1.1.2",
++ "rustix 1.1.4",
+  "x11rb-protocol 0.13.2",
+ ]
+ 
+@@ -11111,7 +11105,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
+ checksum = "32e45ad4206f6d2479085147f02bc2ef834ac85886624a23575ae137c8aa8156"
+ dependencies = [
+  "libc",
+- "rustix 1.1.2",
++ "rustix 1.1.4",
+ ]
+ 
+ [[package]]
+diff --git a/Cargo.toml b/Cargo.toml
+index 85b23a32b8..71859ed92e 100644
+--- a/Cargo.toml
++++ b/Cargo.toml
+@@ -95,9 +95,9 @@ debug = 1
+ opt-level = 3
+ overflow-checks = false
+ debug-assertions = false
+-lto = true
++lto = "fat"
++codegen-units = 1
+ debug = false
+-panic = "abort"          # don't need unwinding so we can skip including the landing pads for that
+ # line tables so we can have useful backtraces for in-house crates
+ [profile.release.package."veloren-network"]
+ debug = "line-tables-only"
+@@ -222,6 +222,15 @@ quinn = { version = "0.11" }
+ [patch.crates-io]
+ # until next specs release
+ specs = { git = "https://github.com/amethyst/specs.git", rev = "4e2da1df29ee840baa9b936593c45592b7c9ae27" }
++libc = { git = 'https://github.com/helce/libc', branch = "devel_e2k" }
++linux-raw-sys_04 = { package = 'linux-raw-sys', git = 'https://github.com/helce/linux-raw-sys', branch = 'devel_e2k_0.4' }
++linux-raw-sys_main = { package = 'linux-raw-sys', git = 'https://github.com/helce/linux-raw-sys', branch = 'devel_e2k' }
++rustix_main = { package = 'rustix', git = 'https://github.com/helce/rustix', branch = 'devel_e2k' }
++rustix_038 = { package = 'rustix', git = 'https://github.com/helce/rustix', branch = 'devel_e2k_0.38' }
++target-lexicon = { git = 'https://github.com/helce/target-lexicon', branch = 'devel_e2k' }
++nix24 = { package = 'nix', git = 'https://github.com/helce/nix?tag=v0.24.3', tag = 'v0.24.3' }
++nix29 = { package = 'nix', git = 'https://github.com/helce/nix?tag=v0.29.0', tag = 'v0.29.0' }
++nix30 = { package = 'nix', git = 'https://github.com/helce/nix?tag=v0.30.1', tag = 'v0.30.1' }
+ 
+ # # Uncomment this to use a local fork of winit (for testing purposes)
+ # winit = { path = "../winit" }
+diff --git a/common/state/Cargo.toml b/common/state/Cargo.toml
+index 1273966254..f463b6529d 100644
+--- a/common/state/Cargo.toml
++++ b/common/state/Cargo.toml
+@@ -39,7 +39,7 @@ toml = { version = "1", optional = true }
+ tar = { version = "0.4.37", optional = true }
+ bincode = { workspace = true, optional = true }
+ timer-queue = "0.1.0"
+-wasmtime = { version = "42", optional = true , features = ["component-model", "async"] }
++wasmtime = { version = "42", optional = true , features = ["component-model", "pulley", "async"] }
+ wasmtime-wasi = { version = "42", optional = true }
+ tokio = { workspace = true, optional = true }
+ async-trait = { workspace = true }
+diff --git a/rust-toolchain b/rust-toolchain
+deleted file mode 100644
+index 764542ab75..0000000000
+--- a/rust-toolchain
++++ /dev/null
+@@ -1 +0,0 @@
+-nightly-2025-09-08
+-- 
+2.50.1
+

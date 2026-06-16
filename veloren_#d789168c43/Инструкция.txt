@@ -1,0 +1,17 @@
+В pkgconfig нужны библиотеки:
+- wayland-client
+- openssl
+- zstd
+- alsa
+- khronos-egl
+- sqlite3
+- udev
+- shaderc
+- x11dl
+
+Сборка:
+0. Поставить rust компилятор стабильной версии 1.93-nightly.
+1. Склонировать с Github репозиторий Zed. https://gitlab.com/veloren/veloren
+2. Переключиться на коммит с хэшем #d789168c43 (соответствует тегу "weekly" на 16.06.2026).
+3. Применить патч "0001-e2k-patch.patch" к корню репозитория "veloren".
+6. Сборка проводится командой "ZSTD_SYS_USE_PKG_CONFIG=1 RUSTFLAGS="-C target-cpu=native" cargo build --release" в корне каталога "veloren".
