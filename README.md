@@ -7,9 +7,9 @@ A repository with a set of patches for various software for the E2K (Elbrus 2000
 - [v0.180.4](https://github.com/sanua356/e2k_patches/tree/master/zed_0_180_4_with_extensions) (Backported livekit api from 0.165.4 version)
 
 ## Veloren
-- [weekly_16_06_2026(#d789168c43)](https://github.com/sanua356/e2k_patches/tree/master/veloren_#d789168c43)
-- [weekly_17_06_2026(#e3b90c3b32)](https://github.com/sanua356/e2k_patches/tree/master/veloren_#e3b90c3b32)
+- [weekly_16_06_2026(#d789168c43)](https://github.com/sanua356/e2k_patches/tree/master/veloren_%23d789168c43)
+- [weekly_17_06_2026(#e3b90c3b32)](https://github.com/sanua356/e2k_patches/tree/master/veloren_%23e3b90c3b32)
 
 ## Just
-- [v1.55.1(#7715e4e30b)](https://github.com/sanua356/e2k_patches/tree/master/just_#7715e4e30b)
+- [v1.55.1(#7715e4e30b)](https://github.com/sanua356/e2k_patches/tree/master/just_%237715e4e30b)
 
