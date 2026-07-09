@@ -13,3 +13,6 @@ A repository with a set of patches for various software for the E2K (Elbrus 2000
 ## Just
 - [v1.55.1(#7715e4e30b)](https://github.com/sanua356/e2k_patches/tree/master/just_%237715e4e30b)
 
+## MdBook
+
+- [v0.5.4](https://github.com/sanua356/e2k_patches/tree/master/mdbook_v0.5.4)

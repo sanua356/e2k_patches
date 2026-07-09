@@ -1,0 +1,6 @@
+Сборка:
+0. Поставить rust компилятор стабильной версии 1.93.
+1. Склонировать с Github репозиторий mdbook. https://github.com/rust-lang/mdBook
+2. Переключиться на тег v0.5.4. git checkout v0.5.4
+3. Применить патч "0001-add-e2k-support.patch" к корню репозитория "mdbook".
+4. Сборка проводится командой "cargo build --release" в корне каталога "mdbook".
