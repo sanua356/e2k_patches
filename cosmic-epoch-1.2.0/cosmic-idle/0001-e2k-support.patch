@@ -1,0 +1,153 @@
+From d591d9b8dd12d7f8c1b8f61f6407a882717d9eaf Mon Sep 17 00:00:00 2001
+From: sanua356 <sanek.pankratov356@gmail.com>
+Date: Tue, 21 Jul 2026 09:26:57 +0300
+Subject: [PATCH] e2k support
+
+---
+ Cargo.lock | 33 +++++++++++++--------------------
+ Cargo.toml | 14 ++++++++++++++
+ 2 files changed, 27 insertions(+), 20 deletions(-)
+
+diff --git a/Cargo.lock b/Cargo.lock
+index 7541a69..6ca113d 100644
+--- a/Cargo.lock
++++ b/Cargo.lock
+@@ -345,8 +345,7 @@ dependencies = [
+ [[package]]
+ name = "cc"
+ version = "1.2.45"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "35900b6c8d709fb1d854671ae27aeaa9eec2f8b01b364e1619a40da3e6fe2afe"
++source = "git+https://github.com/helce/cc-rs?tag=cc-v1.2.45#35f14393d0c629227c77148ef10dc6dbbcf404c3"
+ dependencies = [
+  "find-msvc-tools",
+  "shlex",
+@@ -438,7 +437,7 @@ checksum = "773648b94d0e5d620f64f280777445740e61fe701025087ec8b57f45c791888b"
+ [[package]]
+ name = "cosmic-config"
+ version = "0.1.0"
+-source = "git+https://github.com/pop-os/libcosmic#2f0b3334914e4ab1b0f3df821eeadd7ad700566f"
++source = "git+https://github.com/sanua356/libcosmic?branch=sha2f0b333#5fafa451235f565d13898e95ee6b4abe76b4cdc2"
+ dependencies = [
+  "atomicwrites",
+  "calloop 0.14.3",
+@@ -456,7 +455,7 @@ dependencies = [
+ [[package]]
+ name = "cosmic-config-derive"
+ version = "0.1.0"
+-source = "git+https://github.com/pop-os/libcosmic#2f0b3334914e4ab1b0f3df821eeadd7ad700566f"
++source = "git+https://github.com/sanua356/libcosmic?branch=sha2f0b333#5fafa451235f565d13898e95ee6b4abe76b4cdc2"
+ dependencies = [
+  "quote",
+  "syn",
+@@ -722,8 +721,7 @@ checksum = "37909eebbb50d72f9059c3b6d82c0463f2ff062c9e95845c43a6c9c0355411be"
+ [[package]]
+ name = "find-msvc-tools"
+ version = "0.1.4"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "52051878f80a721bb68ebfbc930e07b65ba72f2da88968ea5c06fd6ca3d3a127"
++source = "git+https://github.com/helce/cc-rs?tag=cc-v1.2.45#35f14393d0c629227c77148ef10dc6dbbcf404c3"
+ 
+ [[package]]
+ name = "fnv"
+@@ -932,7 +930,7 @@ dependencies = [
+ [[package]]
+ name = "iced_core"
+ version = "0.14.0-dev"
+-source = "git+https://github.com/pop-os/libcosmic#2f0b3334914e4ab1b0f3df821eeadd7ad700566f"
++source = "git+https://github.com/sanua356/libcosmic?branch=sha2f0b333#5fafa451235f565d13898e95ee6b4abe76b4cdc2"
+ dependencies = [
+  "bitflags 2.10.0",
+  "bytes",
+@@ -954,7 +952,7 @@ dependencies = [
+ [[package]]
+ name = "iced_futures"
+ version = "0.14.0-dev"
+-source = "git+https://github.com/pop-os/libcosmic#2f0b3334914e4ab1b0f3df821eeadd7ad700566f"
++source = "git+https://github.com/sanua356/libcosmic?branch=sha2f0b333#5fafa451235f565d13898e95ee6b4abe76b4cdc2"
+ dependencies = [
+  "futures",
+  "iced_core",
+@@ -1109,9 +1107,8 @@ dependencies = [
+ 
+ [[package]]
+ name = "libc"
+-version = "0.2.177"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "2874a2af47a2325c2001a6e6fad9b16a53b802102b528163885171cf92b15976"
++version = "0.2.186"
++source = "git+https://github.com/helce/libc?tag=0.2.186#8bcdcacc4c1e79c70571473bcfdff6e1a8df33c2"
+ 
+ [[package]]
+ name = "libloading"
+@@ -1142,14 +1139,12 @@ dependencies = [
+ [[package]]
+ name = "linux-raw-sys"
+ version = "0.4.15"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "d26c52dbd32dccf2d10cac7725f8eae5296885fb5703b261f7d0a0739ec807ab"
++source = "git+https://github.com/helce/linux-raw-sys?tag=v0.4.15#a0fa97804fdeee231566e5f5005512794e1a76ab"
+ 
+ [[package]]
+ name = "linux-raw-sys"
+ version = "0.11.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "df1d3c3b53da64cf5760482273a98e575c651a67eec7f77df96b5b642de8f039"
++source = "git+https://github.com/helce/linux-raw-sys?tag=v0.11.0#50d1c32ee834554e61e59ba9141ce88952e60873"
+ 
+ [[package]]
+ name = "lock_api"
+@@ -1650,8 +1645,7 @@ checksum = "357703d41365b4b27c590e3ed91eabb1b663f07c4c084095e60cbed4362dff0d"
+ [[package]]
+ name = "rustix"
+ version = "0.38.44"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "fdb5bc1ae2baa591800df16c9ca78619bf65c0488b41b96ccec5d11220d8c154"
++source = "git+https://github.com/helce/rustix?tag=0.38.44#8daff198d899a0eb3627f7b034f0752e87a2fb07"
+ dependencies = [
+  "bitflags 2.10.0",
+  "errno",
+@@ -1663,8 +1657,7 @@ dependencies = [
+ [[package]]
+ name = "rustix"
+ version = "1.1.2"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "cd15f8a2c5551a84d56efdc1cd049089e409ac19a3072d5037a17fd70719ff3e"
++source = "git+https://github.com/helce/rustix?tag=v1.1.2#80f26fcfab105d3faa6ff6b93ed53fcf81c5ff65"
+ dependencies = [
+  "bitflags 2.10.0",
+  "errno",
+@@ -2342,7 +2335,7 @@ version = "0.1.11"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+ checksum = "c2a7b1c03c876122aa43f3020e6c3c3ee5c05081c9a00739faf7503aeba10d22"
+ dependencies = [
+- "windows-sys 0.61.2",
++ "windows-sys 0.48.0",
+ ]
+ 
+ [[package]]
+diff --git a/Cargo.toml b/Cargo.toml
+index f9928ad..5663ac2 100644
+--- a/Cargo.toml
++++ b/Cargo.toml
+@@ -23,3 +23,17 @@ futures-lite = "2.6.1"
+ members = [
+     "cosmic-idle-config"
+ ]
++
++[patch."https://github.com/pop-os/libcosmic"]
++cosmic-config = { git = "https://github.com/sanua356/libcosmic", package="cosmic-config", branch = "sha2f0b333" }
++iced-core = { git = "https://github.com/sanua356/libcosmic", package="iced_core", branch = "sha2f0b333" }
++iced-futures = { git = "https://github.com/sanua356/libcosmic", package="iced_futures", branch = "sha2f0b333" }
++
++
++[patch.crates-io]
++libc = { git = "https://github.com/helce/libc", tag = "0.2.186" }
++linux_raw_sys_04 = { package = "linux-raw-sys", git = "https://github.com/helce/linux-raw-sys", tag = "v0.4.15" }
++linux_raw_sys_11 = { package = "linux-raw-sys", git = "https://github.com/helce/linux-raw-sys", tag = "v0.11.0" }
++rustix_1 = { package = "rustix", git = "https://github.com/helce/rustix", tag = "v1.1.2" }
++rustix_0_38 = { package = "rustix", git = "https://github.com/helce/rustix", tag = "0.38.44" }
++cc = { git = "https://github.com/helce/cc-rs", tag = "cc-v1.2.45" }
+-- 
+2.50.1
+

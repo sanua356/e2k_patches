@@ -1,0 +1,257 @@
+From f47520a7d6a0b20d3920b42a3c7346111e3e762b Mon Sep 17 00:00:00 2001
+From: sanua356 <sanek.pankratov356@gmail.com>
+Date: Tue, 21 Jul 2026 09:26:58 +0300
+Subject: [PATCH] e2k support
+
+---
+ Cargo.lock | 52 +++++++++++++++++++++++-----------------------------
+ Cargo.toml | 25 +++++++++++++++++++++++++
+ 2 files changed, 48 insertions(+), 29 deletions(-)
+
+diff --git a/Cargo.lock b/Cargo.lock
+index 46d491a..04d6d56 100644
+--- a/Cargo.lock
++++ b/Cargo.lock
+@@ -1332,7 +1332,7 @@ dependencies = [
+ [[package]]
+ name = "cosmic-config"
+ version = "1.0.0"
+-source = "git+https://github.com/pop-os/libcosmic#a991d7bb433f67016c1473e8e4a03691ededd75a"
++source = "git+https://github.com/sanua356/libcosmic?branch=shaa991d7bb#488fb78ec58e6d97c131ab2ac0d459345581ac00"
+ dependencies = [
+  "atomicwrites",
+  "cosmic-config-derive",
+@@ -1353,7 +1353,7 @@ dependencies = [
+ [[package]]
+ name = "cosmic-config-derive"
+ version = "1.0.0"
+-source = "git+https://github.com/pop-os/libcosmic#a991d7bb433f67016c1473e8e4a03691ededd75a"
++source = "git+https://github.com/sanua356/libcosmic?branch=shaa991d7bb#488fb78ec58e6d97c131ab2ac0d459345581ac00"
+ dependencies = [
+  "quote",
+  "syn 2.0.117",
+@@ -1774,7 +1774,7 @@ dependencies = [
+ [[package]]
+ name = "cosmic-theme"
+ version = "1.0.0"
+-source = "git+https://github.com/pop-os/libcosmic#f0f68933f1552857e2165fc0fa953228107bddef"
++source = "git+https://github.com/sanua356/libcosmic?branch=shaa991d7bb#488fb78ec58e6d97c131ab2ac0d459345581ac00"
+ dependencies = [
+  "almost",
+  "configparser",
+@@ -3158,7 +3158,7 @@ dependencies = [
+ [[package]]
+ name = "iced"
+ version = "0.14.0"
+-source = "git+https://github.com/pop-os/libcosmic#f0f68933f1552857e2165fc0fa953228107bddef"
++source = "git+https://github.com/sanua356/libcosmic?branch=shaa991d7bb#488fb78ec58e6d97c131ab2ac0d459345581ac00"
+ dependencies = [
+  "dnd",
+  "iced_accessibility",
+@@ -3179,7 +3179,7 @@ dependencies = [
+ [[package]]
+ name = "iced_accessibility"
+ version = "0.1.0"
+-source = "git+https://github.com/pop-os/libcosmic#a991d7bb433f67016c1473e8e4a03691ededd75a"
++source = "git+https://github.com/sanua356/libcosmic?branch=shaa991d7bb#488fb78ec58e6d97c131ab2ac0d459345581ac00"
+ dependencies = [
+  "accesskit",
+  "accesskit_winit",
+@@ -3188,7 +3188,7 @@ dependencies = [
+ [[package]]
+ name = "iced_core"
+ version = "0.14.0"
+-source = "git+https://github.com/pop-os/libcosmic#a991d7bb433f67016c1473e8e4a03691ededd75a"
++source = "git+https://github.com/sanua356/libcosmic?branch=shaa991d7bb#488fb78ec58e6d97c131ab2ac0d459345581ac00"
+ dependencies = [
+  "bitflags 2.12.1",
+  "bytes",
+@@ -3214,7 +3214,7 @@ dependencies = [
+ [[package]]
+ name = "iced_debug"
+ version = "0.14.0"
+-source = "git+https://github.com/pop-os/libcosmic#f0f68933f1552857e2165fc0fa953228107bddef"
++source = "git+https://github.com/sanua356/libcosmic?branch=shaa991d7bb#488fb78ec58e6d97c131ab2ac0d459345581ac00"
+ dependencies = [
+  "iced_core",
+  "iced_futures",
+@@ -3224,7 +3224,7 @@ dependencies = [
+ [[package]]
+ name = "iced_futures"
+ version = "0.14.0"
+-source = "git+https://github.com/pop-os/libcosmic#a991d7bb433f67016c1473e8e4a03691ededd75a"
++source = "git+https://github.com/sanua356/libcosmic?branch=shaa991d7bb#488fb78ec58e6d97c131ab2ac0d459345581ac00"
+ dependencies = [
+  "futures",
+  "iced_core",
+@@ -3238,7 +3238,7 @@ dependencies = [
+ [[package]]
+ name = "iced_graphics"
+ version = "0.14.0"
+-source = "git+https://github.com/pop-os/libcosmic#f0f68933f1552857e2165fc0fa953228107bddef"
++source = "git+https://github.com/sanua356/libcosmic?branch=shaa991d7bb#488fb78ec58e6d97c131ab2ac0d459345581ac00"
+ dependencies = [
+  "bitflags 2.12.1",
+  "bytemuck",
+@@ -3259,7 +3259,7 @@ dependencies = [
+ [[package]]
+ name = "iced_program"
+ version = "0.14.0"
+-source = "git+https://github.com/pop-os/libcosmic#f0f68933f1552857e2165fc0fa953228107bddef"
++source = "git+https://github.com/sanua356/libcosmic?branch=shaa991d7bb#488fb78ec58e6d97c131ab2ac0d459345581ac00"
+ dependencies = [
+  "iced_graphics",
+  "iced_runtime",
+@@ -3268,7 +3268,7 @@ dependencies = [
+ [[package]]
+ name = "iced_renderer"
+ version = "0.14.0"
+-source = "git+https://github.com/pop-os/libcosmic#f0f68933f1552857e2165fc0fa953228107bddef"
++source = "git+https://github.com/sanua356/libcosmic?branch=shaa991d7bb#488fb78ec58e6d97c131ab2ac0d459345581ac00"
+ dependencies = [
+  "iced_graphics",
+  "iced_tiny_skia",
+@@ -3280,7 +3280,7 @@ dependencies = [
+ [[package]]
+ name = "iced_runtime"
+ version = "0.14.0"
+-source = "git+https://github.com/pop-os/libcosmic#f0f68933f1552857e2165fc0fa953228107bddef"
++source = "git+https://github.com/sanua356/libcosmic?branch=shaa991d7bb#488fb78ec58e6d97c131ab2ac0d459345581ac00"
+ dependencies = [
+  "bytes",
+  "cosmic-client-toolkit",
+@@ -3296,7 +3296,7 @@ dependencies = [
+ [[package]]
+ name = "iced_tiny_skia"
+ version = "0.14.0"
+-source = "git+https://github.com/pop-os/libcosmic#f0f68933f1552857e2165fc0fa953228107bddef"
++source = "git+https://github.com/sanua356/libcosmic?branch=shaa991d7bb#488fb78ec58e6d97c131ab2ac0d459345581ac00"
+ dependencies = [
+  "bytemuck",
+  "cosmic-text",
+@@ -3313,7 +3313,7 @@ dependencies = [
+ [[package]]
+ name = "iced_wgpu"
+ version = "0.14.0"
+-source = "git+https://github.com/pop-os/libcosmic#f0f68933f1552857e2165fc0fa953228107bddef"
++source = "git+https://github.com/sanua356/libcosmic?branch=shaa991d7bb#488fb78ec58e6d97c131ab2ac0d459345581ac00"
+ dependencies = [
+  "as-raw-xcb-connection",
+  "bitflags 2.12.1",
+@@ -3344,7 +3344,7 @@ dependencies = [
+ [[package]]
+ name = "iced_widget"
+ version = "0.14.2"
+-source = "git+https://github.com/pop-os/libcosmic#f0f68933f1552857e2165fc0fa953228107bddef"
++source = "git+https://github.com/sanua356/libcosmic?branch=shaa991d7bb#488fb78ec58e6d97c131ab2ac0d459345581ac00"
+ dependencies = [
+  "cosmic-client-toolkit",
+  "dnd",
+@@ -3364,7 +3364,7 @@ dependencies = [
+ [[package]]
+ name = "iced_winit"
+ version = "0.14.0"
+-source = "git+https://github.com/pop-os/libcosmic#f0f68933f1552857e2165fc0fa953228107bddef"
++source = "git+https://github.com/sanua356/libcosmic?branch=shaa991d7bb#488fb78ec58e6d97c131ab2ac0d459345581ac00"
+ dependencies = [
+  "cosmic-client-toolkit",
+  "cursor-icon",
+@@ -4449,13 +4449,12 @@ checksum = "7a79a3332a6609480d7d0c9eab957bca6b455b91bb84e66d19f5ff66294b85b8"
+ [[package]]
+ name = "libc"
+ version = "0.2.186"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "68ab91017fe16c622486840e4c83c9a37afeff978bd239b5293d61ece587de66"
++source = "git+https://github.com/helce/libc?tag=0.2.186#8bcdcacc4c1e79c70571473bcfdff6e1a8df33c2"
+ 
+ [[package]]
+ name = "libcosmic"
+ version = "1.0.0"
+-source = "git+https://github.com/pop-os/libcosmic#f0f68933f1552857e2165fc0fa953228107bddef"
++source = "git+https://github.com/sanua356/libcosmic?branch=shaa991d7bb#488fb78ec58e6d97c131ab2ac0d459345581ac00"
+ dependencies = [
+  "apply",
+  "ashpd 0.12.3",
+@@ -4573,20 +4572,17 @@ checksum = "d4a5ff6bcca6c4867b1c4fd4ef63e4db7436ef363e0ad7531d1558856bae64f4"
+ [[package]]
+ name = "linux-raw-sys"
+ version = "0.4.15"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "d26c52dbd32dccf2d10cac7725f8eae5296885fb5703b261f7d0a0739ec807ab"
++source = "git+https://github.com/helce/linux-raw-sys?tag=v0.4.15#a0fa97804fdeee231566e5f5005512794e1a76ab"
+ 
+ [[package]]
+ name = "linux-raw-sys"
+ version = "0.6.5"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "2a385b1be4e5c3e362ad2ffa73c392e53f031eaa5b7d648e64cd87f27f6063d7"
++source = "git+https://github.com/helce/linux-raw-sys?tag=v0.6.5#571d552febe62374463612fd32d404d4781908a9"
+ 
+ [[package]]
+ name = "linux-raw-sys"
+ version = "0.12.1"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "32a66949e030da00e8c7d4434b251670a91556f4144941d37452769c25d58a53"
++source = "git+https://github.com/helce/linux-raw-sys?tag=v0.12.1#1555c7dee43aa0547c625cdd56b1c342f50867c4"
+ 
+ [[package]]
+ name = "litemap"
+@@ -6315,8 +6311,7 @@ dependencies = [
+ [[package]]
+ name = "rustix"
+ version = "0.38.44"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "fdb5bc1ae2baa591800df16c9ca78619bf65c0488b41b96ccec5d11220d8c154"
++source = "git+https://github.com/helce/rustix?tag=0.38.44#8daff198d899a0eb3627f7b034f0752e87a2fb07"
+ dependencies = [
+  "bitflags 2.12.1",
+  "errno",
+@@ -6328,8 +6323,7 @@ dependencies = [
+ [[package]]
+ name = "rustix"
+ version = "1.1.4"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "b6fe4565b9518b83ef4f91bb47ce29620ca828bd32cb7e408f0062e9930ba190"
++source = "git+https://github.com/helce/rustix?tag=v1.1.4#a64f3722f385ced778684547353884b4a97d7652"
+ dependencies = [
+  "bitflags 2.12.1",
+  "errno",
+diff --git a/Cargo.toml b/Cargo.toml
+index 51a808a..ba43366 100644
+--- a/Cargo.toml
++++ b/Cargo.toml
+@@ -88,6 +88,31 @@ cosmic-client-toolkit = { git = "https://github.com/pop-os/cosmic-protocols//",
+ # upower_dbus = { path = "../dbus-settings-bindings/upower" }
+ # nm-secret-agent-manager = { git = "https://github.com/pop-os/dbus-settings-bindings//", branch = "nm-secret-agent" }
+ 
++[patch."https://github.com/pop-os/libcosmic"]
++libcosmic = { git = "https://github.com/sanua356/libcosmic", branch = "shaa991d7bb" }
++cosmic-config = { git = "https://github.com/sanua356/libcosmic", package="cosmic-config", branch = "shaa991d7bb" }
++cosmic-theme = { git = "https://github.com/sanua356/libcosmic", package="cosmic-theme", branch = "shaa991d7bb" }
++iced = { git = "https://github.com/sanua356/libcosmic", package="iced", branch = "shaa991d7bb" }
++iced-accessibility = { git = "https://github.com/sanua356/libcosmic", package="iced_accessibility", branch = "shaa991d7bb" }
++iced-core = { git = "https://github.com/sanua356/libcosmic", package="iced_core", branch = "shaa991d7bb" }
++iced-debug = { git = "https://github.com/sanua356/libcosmic", package="iced_debug", branch = "shaa991d7bb" }
++iced-futures = { git = "https://github.com/sanua356/libcosmic", package="iced_futures", branch = "shaa991d7bb" }
++iced-graphics = { git = "https://github.com/sanua356/libcosmic", package="iced_graphics", branch = "shaa991d7bb" }
++iced-program = { git = "https://github.com/sanua356/libcosmic", package="iced_program", branch = "shaa991d7bb" }
++iced-renderer = { git = "https://github.com/sanua356/libcosmic", package="iced_renderer", branch = "shaa991d7bb" }
++iced-runtime = { git = "https://github.com/sanua356/libcosmic", package="iced_runtime", branch = "shaa991d7bb" }
++iced-tiny-skia = { git = "https://github.com/sanua356/libcosmic", package="iced_tiny_skia", branch = "shaa991d7bb" }
++iced-wgpu = { git = "https://github.com/sanua356/libcosmic", package="iced_wgpu", branch = "shaa991d7bb" }
++iced-widget = { git = "https://github.com/sanua356/libcosmic", package="iced_widget", branch = "shaa991d7bb" }
++iced-winit = { git = "https://github.com/sanua356/libcosmic", package="iced_winit", branch = "shaa991d7bb" }
++
++
+ [patch.crates-io]
++libc = { git = "https://github.com/helce/libc", tag = "0.2.186" }
++linux_raw_sys_04 = { package = "linux-raw-sys", git = "https://github.com/helce/linux-raw-sys", tag = "v0.4.15" }
++linux_raw_sys_06 = { package = "linux-raw-sys", git = "https://github.com/helce/linux-raw-sys", tag = "v0.6.5" }
++linux_raw_sys_12 = { package = "linux-raw-sys", git = "https://github.com/helce/linux-raw-sys", tag = "v0.12.1" }
++rustix_1 = { package = "rustix", git = "https://github.com/helce/rustix", tag = "v1.1.4" }
++rustix_0_38 = { package = "rustix", git = "https://github.com/helce/rustix", tag = "0.38.44" }
+ atspi = { git = "https://github.com/wash2/atspi" }
+ atspi-common = { git = "https://github.com/wash2/atspi" }
+-- 
+2.50.1
+

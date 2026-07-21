@@ -1,0 +1,10 @@
+В ОС нужны пакеты (справедливо для Sisyphus_e2k): build-essential make gcc gcc-c++ dbus git libdbus-devel libdisplay-info-devel libflatpack-devel libglvnd-devel gstreamer1.0 libgstreamermm1.0 gstreamer1.0-devel libgstreamer1.0-gir-devel gstreamer1.0-devel libinput-devel clang21.1 libpixman-devel libseat1-devel libssl-devel libwayland-client-devel libwayland-cursor-devel libwayland-egl-devel libwayland-server-devel wayland-devel libxkbcommon-devel udev
+
+Сборка:
+0. Поставить rust компилятор стабильной версии 1.93.
+1. Склонировать с Github репозиторий Zed. https://github.com/pop-os/cosmic-epoch
+2. Переключиться на тег epoch-1.2.0.
+4. Склонировать все субмодули через: git submodule update --init --recursive.
+3. Применить патчи для каждого субмодуля по названиям каталогов.
+5. Применить патч для корня репозитория (название "0001-add-e2k-support.patch").
+6. Сборка проводится командой "just sysext" в корне каталога "cosmic-epoch".

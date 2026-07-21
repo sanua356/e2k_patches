@@ -1,0 +1,79 @@
+From b9ac164ae309a2d4b2efd47a8913246066c61741 Mon Sep 17 00:00:00 2001
+From: sanua356 <sanek.pankratov356@gmail.com>
+Date: Tue, 21 Jul 2026 09:32:47 +0300
+Subject: [PATCH] add e2k support
+
+---
+ .gitignore |  4 +++-
+ justfile   | 10 ++--------
+ 2 files changed, 5 insertions(+), 9 deletions(-)
+
+diff --git a/.gitignore b/.gitignore
+index 555f77d..17cba85 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -1,3 +1,5 @@
+ .vscode
+ cosmic-sysext
+-*_build
+\ No newline at end of file
++*_build
++patch.sh
++patches
+diff --git a/justfile b/justfile
+index 0f7c518..4ab3f0d 100644
+--- a/justfile
++++ b/justfile
+@@ -13,7 +13,6 @@ build:
+     {{ just }} cosmic-greeter/build-release
+     {{ just }} cosmic-idle/build-release
+     {{ just }} cosmic-initial-setup/build-release
+-    {{ just }} cosmic-launcher/build-release
+     {{ just }} cosmic-monitor/build-release
+     {{ just }} cosmic-notifications/build-release
+     {{ just }} cosmic-osd/build-release
+@@ -28,8 +27,7 @@ build:
+     {{ just }} cosmic-term/build-release
+     {{ make }} -C cosmic-wallpapers all
+     {{ make }} -C cosmic-workspaces-epoch all
+-    {{ just }} pop-launcher/build-release
+-    {{ make }} -C xdg-desktop-portal-cosmic all
++    {{ just }} xdg-desktop-portal-cosmic/build-release
+ 
+ install rootdir="" prefix="/usr/local": build
+     {{ just }} rootdir={{rootdir}} prefix={{prefix}} cosmic-applets/install
+@@ -42,7 +40,6 @@ install rootdir="" prefix="/usr/local": build
+     {{ just }} rootdir={{rootdir}} prefix={{prefix}} cosmic-icons/install
+     {{ just }} rootdir={{rootdir}} prefix={{prefix}} cosmic-idle/install
+     {{ just }} rootdir={{rootdir}} prefix={{prefix}} cosmic-initial-setup/install
+-    {{ just }} rootdir={{rootdir}} prefix={{prefix}} cosmic-launcher/install
+     {{ just }} rootdir={{rootdir}} prefix={{prefix}} cosmic-monitor/install
+     {{ just }} rootdir={{rootdir}} prefix={{prefix}} cosmic-notifications/install
+     {{ just }} rootdir={{rootdir}} prefix={{prefix}} cosmic-osd/install
+@@ -57,8 +54,7 @@ install rootdir="" prefix="/usr/local": build
+     {{ just }} rootdir={{rootdir}} prefix={{prefix}} cosmic-term/install
+     {{ make }} -C cosmic-wallpapers install DESTDIR={{rootdir}} prefix={{prefix}}
+     {{ make }} -C cosmic-workspaces-epoch install DESTDIR={{rootdir}} prefix={{prefix}}
+-    {{ just }} rootdir={{rootdir}} pop-launcher/install
+-    {{ make }} -C xdg-desktop-portal-cosmic install DESTDIR={{rootdir}} prefix={{prefix}}
++    {{ just }} rootdir={{rootdir}} prefix={{prefix}} xdg-desktop-portal-cosmic/install
+ 
+ _mkdir dir:
+    mkdir -p dir
+@@ -85,7 +81,6 @@ clean:
+     rm -rf cosmic-greeter/target
+     {{ just }} cosmic-idle/clean
+     {{ just }} cosmic-initial-setup/clean
+-    rm -rf cosmic-launcher/target
+     {{ just }} cosmic-monitor/clean
+     rm -rf cosmic-panel/target
+     rm -rf cosmic-player/target
+@@ -100,5 +95,4 @@ clean:
+     {{ just }} cosmic-term/clean
+     {{ make }} -C cosmic-wallpapers clean
+     rm -rf cosmic-workspaces-epoch/target
+-    {{ just }} pop-launcher/clean
+     rm -rf xdg-desktop-portal-cosmic/target
+-- 
+2.50.1
+

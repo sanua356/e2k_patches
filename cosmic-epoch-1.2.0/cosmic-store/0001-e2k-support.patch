@@ -1,0 +1,798 @@
+From ef86185613afebb3c54d672b38cd9c2b3347b08f Mon Sep 17 00:00:00 2001
+From: sanua356 <sanek.pankratov356@gmail.com>
+Date: Tue, 21 Jul 2026 09:26:58 +0300
+Subject: [PATCH] e2k support
+
+---
+ Cargo.lock               | 338 ++++++++++++++++-----------------------
+ Cargo.toml               |  30 +++-
+ flathub-stats/Cargo.toml |   2 +-
+ justfile                 |   2 +-
+ 4 files changed, 166 insertions(+), 206 deletions(-)
+
+diff --git a/Cargo.lock b/Cargo.lock
+index 15a3307..3c60751 100644
+--- a/Cargo.lock
++++ b/Cargo.lock
+@@ -543,29 +543,6 @@ version = "1.5.1"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+ checksum = "f2032f911046de80f0a198e0901378627c33f59ea0ac00e363d481118bd70a53"
+ 
+-[[package]]
+-name = "aws-lc-rs"
+-version = "1.17.1"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "4342d8937fc7e5dd9b1c60292261c0670c882a2cd1719cfc11b1af41731e32ad"
+-dependencies = [
+- "aws-lc-sys",
+- "zeroize",
+-]
+-
+-[[package]]
+-name = "aws-lc-sys"
+-version = "0.42.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "6d9ceb1da931507a12f4fccea479dccd00da1943e1b4ae72d8e502d707361444"
+-dependencies = [
+- "cc",
+- "cmake",
+- "dunce",
+- "fs_extra",
+- "pkg-config",
+-]
+-
+ [[package]]
+ name = "base64"
+ version = "0.22.1"
+@@ -915,15 +892,6 @@ dependencies = [
+  "x11rb",
+ ]
+ 
+-[[package]]
+-name = "cmake"
+-version = "0.1.58"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "c0f78a02292a74a88ac736019ab962ece0bc380e3f977bf72e376c5d78ff0678"
+-dependencies = [
+- "cc",
+-]
+-
+ [[package]]
+ name = "cocoa"
+ version = "0.25.0"
+@@ -935,7 +903,7 @@ dependencies = [
+  "cocoa-foundation",
+  "core-foundation 0.9.4",
+  "core-graphics",
+- "foreign-types",
++ "foreign-types 0.5.0",
+  "libc",
+  "objc",
+ ]
+@@ -1037,7 +1005,7 @@ dependencies = [
+  "bitflags 1.3.2",
+  "core-foundation 0.9.4",
+  "core-graphics-types 0.1.3",
+- "foreign-types",
++ "foreign-types 0.5.0",
+  "libc",
+ ]
+ 
+@@ -1088,7 +1056,7 @@ dependencies = [
+ [[package]]
+ name = "cosmic-config"
+ version = "1.0.0"
+-source = "git+https://github.com/pop-os/libcosmic.git#18a7a75e3316b1f4855777af677d989467f2da74"
++source = "git+https://github.com/sanua356/libcosmic?branch=sha18a7a75e#225e22917dc3c2c92d6034dcacc246daa4fbf9c3"
+ dependencies = [
+  "atomicwrites",
+  "cosmic-config-derive",
+@@ -1109,7 +1077,7 @@ dependencies = [
+ [[package]]
+ name = "cosmic-config-derive"
+ version = "1.0.0"
+-source = "git+https://github.com/pop-os/libcosmic.git#18a7a75e3316b1f4855777af677d989467f2da74"
++source = "git+https://github.com/sanua356/libcosmic?branch=sha18a7a75e#225e22917dc3c2c92d6034dcacc246daa4fbf9c3"
+ dependencies = [
+  "quote",
+  "syn 2.0.118",
+@@ -1250,7 +1218,7 @@ dependencies = [
+ [[package]]
+ name = "cosmic-theme"
+ version = "1.0.0"
+-source = "git+https://github.com/pop-os/libcosmic.git#18a7a75e3316b1f4855777af677d989467f2da74"
++source = "git+https://github.com/sanua356/libcosmic?branch=sha18a7a75e#225e22917dc3c2c92d6034dcacc246daa4fbf9c3"
+ dependencies = [
+  "almost",
+  "configparser",
+@@ -1647,12 +1615,6 @@ version = "0.8.1"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+ checksum = "edf234dd1594d6dd434a8fb8cada51ddbbc593e40e4a01556a0b31c62da2775b"
+ 
+-[[package]]
+-name = "dunce"
+-version = "1.0.5"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "92773504d58c093f6de2459af4af33faa518c13451eb8f2b5698ed3d36e7c813"
+-
+ [[package]]
+ name = "dyn-clone"
+ version = "1.0.20"
+@@ -1959,6 +1921,15 @@ dependencies = [
+  "ttf-parser",
+ ]
+ 
++[[package]]
++name = "foreign-types"
++version = "0.3.2"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "f6f339eb8adc052cd2ca78910fda869aefa38d22d5cb648e6485e4d3fc06f3b1"
++dependencies = [
++ "foreign-types-shared 0.1.1",
++]
++
+ [[package]]
+ name = "foreign-types"
+ version = "0.5.0"
+@@ -1966,7 +1937,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
+ checksum = "d737d9aa519fb7b749cbc3b962edcf310a8dd1f4b67c91c4f83975dbdd17d965"
+ dependencies = [
+  "foreign-types-macros",
+- "foreign-types-shared",
++ "foreign-types-shared 0.3.1",
+ ]
+ 
+ [[package]]
+@@ -1980,6 +1951,12 @@ dependencies = [
+  "syn 2.0.118",
+ ]
+ 
++[[package]]
++name = "foreign-types-shared"
++version = "0.1.1"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "00b0228411908ca8685dba7fc2cdd70ec9990a6e753e89b6ac91a84c40fbaf4b"
++
+ [[package]]
+ name = "foreign-types-shared"
+ version = "0.3.1"
+@@ -2020,12 +1997,6 @@ dependencies = [
+  "nom",
+ ]
+ 
+-[[package]]
+-name = "fs_extra"
+-version = "1.3.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "42703706b716c37f96a77aea830392ad231f44c9e9a67872fa5548707e11b11c"
+-
+ [[package]]
+ name = "fsevent-sys"
+ version = "4.1.0"
+@@ -2163,10 +2134,8 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
+ checksum = "ff2abc00be7fca6ebc474524697ae276ad847ad0a6b3faa4bcb027e9a4614ad0"
+ dependencies = [
+  "cfg-if",
+- "js-sys",
+  "libc",
+  "wasi",
+- "wasm-bindgen",
+ ]
+ 
+ [[package]]
+@@ -2176,11 +2145,9 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
+ checksum = "899def5c37c4fd7b2664648c28120ecec138e4d395b459e5ca34f9cce2dd77fd"
+ dependencies = [
+  "cfg-if",
+- "js-sys",
+  "libc",
+  "r-efi 5.3.0",
+  "wasip2",
+- "wasm-bindgen",
+ ]
+ 
+ [[package]]
+@@ -2578,6 +2545,22 @@ dependencies = [
+  "tower-service",
+ ]
+ 
++[[package]]
++name = "hyper-tls"
++version = "0.6.0"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "70206fc6890eaca9fde8a0bf71caa2ddfc9fe045ac9e5c70df101a7dbde866e0"
++dependencies = [
++ "bytes",
++ "http-body-util",
++ "hyper",
++ "hyper-util",
++ "native-tls",
++ "tokio",
++ "tokio-native-tls",
++ "tower-service",
++]
++
+ [[package]]
+ name = "hyper-util"
+ version = "0.1.20"
+@@ -2697,7 +2680,7 @@ dependencies = [
+ [[package]]
+ name = "iced"
+ version = "0.14.0"
+-source = "git+https://github.com/pop-os/libcosmic.git#18a7a75e3316b1f4855777af677d989467f2da74"
++source = "git+https://github.com/sanua356/libcosmic?branch=sha18a7a75e#225e22917dc3c2c92d6034dcacc246daa4fbf9c3"
+ dependencies = [
+  "dnd",
+  "iced_accessibility",
+@@ -2718,7 +2701,7 @@ dependencies = [
+ [[package]]
+ name = "iced_accessibility"
+ version = "0.1.0"
+-source = "git+https://github.com/pop-os/libcosmic.git#18a7a75e3316b1f4855777af677d989467f2da74"
++source = "git+https://github.com/sanua356/libcosmic?branch=sha18a7a75e#225e22917dc3c2c92d6034dcacc246daa4fbf9c3"
+ dependencies = [
+  "accesskit",
+  "accesskit_winit",
+@@ -2727,7 +2710,7 @@ dependencies = [
+ [[package]]
+ name = "iced_core"
+ version = "0.14.0"
+-source = "git+https://github.com/pop-os/libcosmic.git#18a7a75e3316b1f4855777af677d989467f2da74"
++source = "git+https://github.com/sanua356/libcosmic?branch=sha18a7a75e#225e22917dc3c2c92d6034dcacc246daa4fbf9c3"
+ dependencies = [
+  "bitflags 2.13.0",
+  "bytes",
+@@ -2753,7 +2736,7 @@ dependencies = [
+ [[package]]
+ name = "iced_debug"
+ version = "0.14.0"
+-source = "git+https://github.com/pop-os/libcosmic.git#18a7a75e3316b1f4855777af677d989467f2da74"
++source = "git+https://github.com/sanua356/libcosmic?branch=sha18a7a75e#225e22917dc3c2c92d6034dcacc246daa4fbf9c3"
+ dependencies = [
+  "iced_core",
+  "iced_futures",
+@@ -2763,7 +2746,7 @@ dependencies = [
+ [[package]]
+ name = "iced_futures"
+ version = "0.14.0"
+-source = "git+https://github.com/pop-os/libcosmic.git#18a7a75e3316b1f4855777af677d989467f2da74"
++source = "git+https://github.com/sanua356/libcosmic?branch=sha18a7a75e#225e22917dc3c2c92d6034dcacc246daa4fbf9c3"
+ dependencies = [
+  "futures",
+  "iced_core",
+@@ -2777,7 +2760,7 @@ dependencies = [
+ [[package]]
+ name = "iced_graphics"
+ version = "0.14.0"
+-source = "git+https://github.com/pop-os/libcosmic.git#18a7a75e3316b1f4855777af677d989467f2da74"
++source = "git+https://github.com/sanua356/libcosmic?branch=sha18a7a75e#225e22917dc3c2c92d6034dcacc246daa4fbf9c3"
+ dependencies = [
+  "bitflags 2.13.0",
+  "bytemuck",
+@@ -2798,7 +2781,7 @@ dependencies = [
+ [[package]]
+ name = "iced_program"
+ version = "0.14.0"
+-source = "git+https://github.com/pop-os/libcosmic.git#18a7a75e3316b1f4855777af677d989467f2da74"
++source = "git+https://github.com/sanua356/libcosmic?branch=sha18a7a75e#225e22917dc3c2c92d6034dcacc246daa4fbf9c3"
+ dependencies = [
+  "iced_graphics",
+  "iced_runtime",
+@@ -2807,7 +2790,7 @@ dependencies = [
+ [[package]]
+ name = "iced_renderer"
+ version = "0.14.0"
+-source = "git+https://github.com/pop-os/libcosmic.git#18a7a75e3316b1f4855777af677d989467f2da74"
++source = "git+https://github.com/sanua356/libcosmic?branch=sha18a7a75e#225e22917dc3c2c92d6034dcacc246daa4fbf9c3"
+ dependencies = [
+  "iced_graphics",
+  "iced_tiny_skia",
+@@ -2819,7 +2802,7 @@ dependencies = [
+ [[package]]
+ name = "iced_runtime"
+ version = "0.14.0"
+-source = "git+https://github.com/pop-os/libcosmic.git#18a7a75e3316b1f4855777af677d989467f2da74"
++source = "git+https://github.com/sanua356/libcosmic?branch=sha18a7a75e#225e22917dc3c2c92d6034dcacc246daa4fbf9c3"
+ dependencies = [
+  "bytes",
+  "cosmic-client-toolkit",
+@@ -2835,7 +2818,7 @@ dependencies = [
+ [[package]]
+ name = "iced_tiny_skia"
+ version = "0.14.0"
+-source = "git+https://github.com/pop-os/libcosmic.git#18a7a75e3316b1f4855777af677d989467f2da74"
++source = "git+https://github.com/sanua356/libcosmic?branch=sha18a7a75e#225e22917dc3c2c92d6034dcacc246daa4fbf9c3"
+ dependencies = [
+  "bytemuck",
+  "cosmic-text",
+@@ -2852,7 +2835,7 @@ dependencies = [
+ [[package]]
+ name = "iced_wgpu"
+ version = "0.14.0"
+-source = "git+https://github.com/pop-os/libcosmic.git#18a7a75e3316b1f4855777af677d989467f2da74"
++source = "git+https://github.com/sanua356/libcosmic?branch=sha18a7a75e#225e22917dc3c2c92d6034dcacc246daa4fbf9c3"
+ dependencies = [
+  "as-raw-xcb-connection",
+  "bitflags 2.13.0",
+@@ -2883,7 +2866,7 @@ dependencies = [
+ [[package]]
+ name = "iced_widget"
+ version = "0.14.2"
+-source = "git+https://github.com/pop-os/libcosmic.git#18a7a75e3316b1f4855777af677d989467f2da74"
++source = "git+https://github.com/sanua356/libcosmic?branch=sha18a7a75e#225e22917dc3c2c92d6034dcacc246daa4fbf9c3"
+ dependencies = [
+  "cosmic-client-toolkit",
+  "dnd",
+@@ -2902,7 +2885,7 @@ dependencies = [
+ [[package]]
+ name = "iced_winit"
+ version = "0.14.0"
+-source = "git+https://github.com/pop-os/libcosmic.git#18a7a75e3316b1f4855777af677d989467f2da74"
++source = "git+https://github.com/sanua356/libcosmic?branch=sha18a7a75e#225e22917dc3c2c92d6034dcacc246daa4fbf9c3"
+ dependencies = [
+  "cosmic-client-toolkit",
+  "cursor-icon",
+@@ -3448,13 +3431,12 @@ checksum = "bbd2bcb4c963f2ddae06a2efc7e9f3591312473c50c6685e1f298068316e66fe"
+ [[package]]
+ name = "libc"
+ version = "0.2.186"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "68ab91017fe16c622486840e4c83c9a37afeff978bd239b5293d61ece587de66"
++source = "git+https://github.com/helce/libc?tag=0.2.186#8bcdcacc4c1e79c70571473bcfdff6e1a8df33c2"
+ 
+ [[package]]
+ name = "libcosmic"
+ version = "1.0.0"
+-source = "git+https://github.com/pop-os/libcosmic.git#18a7a75e3316b1f4855777af677d989467f2da74"
++source = "git+https://github.com/sanua356/libcosmic?branch=sha18a7a75e#225e22917dc3c2c92d6034dcacc246daa4fbf9c3"
+ dependencies = [
+  "apply",
+  "ashpd 0.12.3",
+@@ -3578,20 +3560,17 @@ checksum = "d4a5ff6bcca6c4867b1c4fd4ef63e4db7436ef363e0ad7531d1558856bae64f4"
+ [[package]]
+ name = "linux-raw-sys"
+ version = "0.4.15"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "d26c52dbd32dccf2d10cac7725f8eae5296885fb5703b261f7d0a0739ec807ab"
++source = "git+https://github.com/helce/linux-raw-sys?tag=v0.4.15#a0fa97804fdeee231566e5f5005512794e1a76ab"
+ 
+ [[package]]
+ name = "linux-raw-sys"
+ version = "0.6.5"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "2a385b1be4e5c3e362ad2ffa73c392e53f031eaa5b7d648e64cd87f27f6063d7"
++source = "git+https://github.com/helce/linux-raw-sys?tag=v0.6.5#571d552febe62374463612fd32d404d4781908a9"
+ 
+ [[package]]
+ name = "linux-raw-sys"
+ version = "0.12.1"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "32a66949e030da00e8c7d4434b251670a91556f4144941d37452769c25d58a53"
++source = "git+https://github.com/helce/linux-raw-sys?tag=v0.12.1#1555c7dee43aa0547c625cdd56b1c342f50867c4"
+ 
+ [[package]]
+ name = "litemap"
+@@ -3649,12 +3628,6 @@ version = "0.16.4"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+ checksum = "7f66e8d5d03f609abc3a39e6f08e4164ebf1447a732906d39eb9b99b7919ef39"
+ 
+-[[package]]
+-name = "lru-slab"
+-version = "0.1.2"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "112b39cec0b298b6c1999fee3e31427f74f676e4cb9879ed1a121b43661a4154"
+-
+ [[package]]
+ name = "lyon"
+ version = "1.0.19"
+@@ -3772,7 +3745,7 @@ dependencies = [
+  "bitflags 2.13.0",
+  "block",
+  "core-graphics-types 0.2.0",
+- "foreign-types",
++ "foreign-types 0.5.0",
+  "log",
+  "objc",
+  "paste",
+@@ -3856,6 +3829,23 @@ dependencies = [
+  "unicode-ident",
+ ]
+ 
++[[package]]
++name = "native-tls"
++version = "0.2.18"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "465500e14ea162429d264d44189adc38b199b62b1c21eea9f69e4b73cb03bbf2"
++dependencies = [
++ "libc",
++ "log",
++ "openssl",
++ "openssl-probe",
++ "openssl-sys",
++ "schannel",
++ "security-framework",
++ "security-framework-sys",
++ "tempfile",
++]
++
+ [[package]]
+ name = "ndk"
+ version = "0.9.0"
+@@ -4205,12 +4195,49 @@ dependencies = [
+  "libc",
+ ]
+ 
++[[package]]
++name = "openssl"
++version = "0.10.81"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "77823a27f0babb03091cb9ed9ef80af3b39dbc82f97e8fa530374b7dafd87a45"
++dependencies = [
++ "bitflags 2.13.0",
++ "cfg-if",
++ "foreign-types 0.3.2",
++ "libc",
++ "openssl-macros",
++ "openssl-sys",
++]
++
++[[package]]
++name = "openssl-macros"
++version = "0.1.1"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "a948666b637a0f465e8564c73e89d4dde00d72d4d473cc972f390fc3dcee7d9c"
++dependencies = [
++ "proc-macro2",
++ "quote",
++ "syn 2.0.118",
++]
++
+ [[package]]
+ name = "openssl-probe"
+ version = "0.2.1"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+ checksum = "7c87def4c32ab89d880effc9e097653c8da5d6ef28e6b539d313baaacfbafcbe"
+ 
++[[package]]
++name = "openssl-sys"
++version = "0.9.117"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "b47e7e6bb2c38cd930d25a23b40fa52e068c10e85f3e03a7f5ba5aaca5713695"
++dependencies = [
++ "cc",
++ "libc",
++ "pkg-config",
++ "vcpkg",
++]
++
+ [[package]]
+ name = "option-ext"
+ version = "0.2.0"
+@@ -4685,62 +4712,6 @@ dependencies = [
+  "serde",
+ ]
+ 
+-[[package]]
+-name = "quinn"
+-version = "0.11.11"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "0c1a41e437b6bbd489372cd4971de128e85c855f56c57f283d20ff016cf7c0a8"
+-dependencies = [
+- "bytes",
+- "cfg_aliases",
+- "pin-project-lite",
+- "quinn-proto",
+- "quinn-udp",
+- "rustc-hash 2.1.2",
+- "rustls",
+- "socket2",
+- "thiserror 2.0.18",
+- "tokio",
+- "tracing",
+- "web-time",
+-]
+-
+-[[package]]
+-name = "quinn-proto"
+-version = "0.11.15"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "4fcb935c5bec503c2f0e306bdd3e58bb9029dcb14fa8d9ac76e3a5256ac0763e"
+-dependencies = [
+- "aws-lc-rs",
+- "bytes",
+- "getrandom 0.3.4",
+- "lru-slab",
+- "rand 0.9.4",
+- "ring",
+- "rustc-hash 2.1.2",
+- "rustls",
+- "rustls-pki-types",
+- "slab",
+- "thiserror 2.0.18",
+- "tinyvec",
+- "tracing",
+- "web-time",
+-]
+-
+-[[package]]
+-name = "quinn-udp"
+-version = "0.5.14"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "addec6a0dcad8a8d96a771f815f0eaf55f9d1805756410b39f5fa81332574cbd"
+-dependencies = [
+- "cfg_aliases",
+- "libc",
+- "once_cell",
+- "socket2",
+- "tracing",
+- "windows-sys 0.60.2",
+-]
+-
+ [[package]]
+ name = "quote"
+ version = "1.0.46"
+@@ -4975,19 +4946,18 @@ dependencies = [
+  "http-body-util",
+  "hyper",
+  "hyper-rustls",
++ "hyper-tls",
+  "hyper-util",
+  "js-sys",
+  "log",
+  "mime 0.3.17",
++ "native-tls",
+  "percent-encoding",
+  "pin-project-lite",
+- "quinn",
+- "rustls",
+  "rustls-pki-types",
+- "rustls-platform-verifier",
+  "sync_wrapper",
+  "tokio",
+- "tokio-rustls",
++ "tokio-native-tls",
+  "tower",
+  "tower-http",
+  "tower-service",
+@@ -5152,27 +5122,25 @@ dependencies = [
+ [[package]]
+ name = "rustix"
+ version = "0.38.44"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "fdb5bc1ae2baa591800df16c9ca78619bf65c0488b41b96ccec5d11220d8c154"
++source = "git+https://github.com/helce/rustix?tag=0.38.44#8daff198d899a0eb3627f7b034f0752e87a2fb07"
+ dependencies = [
+  "bitflags 2.13.0",
+  "errno",
+  "libc",
+  "linux-raw-sys 0.4.15",
+- "windows-sys 0.59.0",
++ "windows-sys 0.52.0",
+ ]
+ 
+ [[package]]
+ name = "rustix"
+ version = "1.1.4"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "b6fe4565b9518b83ef4f91bb47ce29620ca828bd32cb7e408f0062e9930ba190"
++source = "git+https://github.com/helce/rustix?tag=v1.1.4#a64f3722f385ced778684547353884b4a97d7652"
+ dependencies = [
+  "bitflags 2.13.0",
+  "errno",
+  "libc",
+  "linux-raw-sys 0.12.1",
+- "windows-sys 0.61.2",
++ "windows-sys 0.52.0",
+ ]
+ 
+ [[package]]
+@@ -5181,7 +5149,6 @@ version = "0.23.41"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+ checksum = "6b92b125634d9b795e7beca796cc790df15a7fb38323bf3196fda83292d06b1f"
+ dependencies = [
+- "aws-lc-rs",
+  "once_cell",
+  "rustls-pki-types",
+  "rustls-webpki",
+@@ -5189,62 +5156,21 @@ dependencies = [
+  "zeroize",
+ ]
+ 
+-[[package]]
+-name = "rustls-native-certs"
+-version = "0.8.4"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "dab5152771c58876a2146916e53e35057e1a4dfa2b9df0f0305b07f611fdea4d"
+-dependencies = [
+- "openssl-probe",
+- "rustls-pki-types",
+- "schannel",
+- "security-framework",
+-]
+-
+ [[package]]
+ name = "rustls-pki-types"
+ version = "1.15.0"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+ checksum = "764899a24af3980067ee14bc143654f297b22eaebfe3c7b6b211920a5a59b046"
+ dependencies = [
+- "web-time",
+  "zeroize",
+ ]
+ 
+-[[package]]
+-name = "rustls-platform-verifier"
+-version = "0.7.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "26d1e2536ce4f35f4846aa13bff16bd0ff40157cdb14cc056c7b14ba41233ba0"
+-dependencies = [
+- "core-foundation 0.10.1",
+- "core-foundation-sys",
+- "jni",
+- "log",
+- "once_cell",
+- "rustls",
+- "rustls-native-certs",
+- "rustls-platform-verifier-android",
+- "rustls-webpki",
+- "security-framework",
+- "security-framework-sys",
+- "webpki-root-certs",
+- "windows-sys 0.61.2",
+-]
+-
+-[[package]]
+-name = "rustls-platform-verifier-android"
+-version = "0.1.1"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "f87165f0995f63a9fbeea62b64d10b4d9d8e78ec6d7d51fb2125fda7bb36788f"
+-
+ [[package]]
+ name = "rustls-webpki"
+ version = "0.103.13"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+ checksum = "61c429a8649f110dddef65e2a5ad240f747e85f7758a6bccc7e5777bd33f756e"
+ dependencies = [
+- "aws-lc-rs",
+  "ring",
+  "rustls-pki-types",
+  "untrusted",
+@@ -5675,7 +5601,7 @@ dependencies = [
+  "core-graphics",
+  "drm",
+  "fastrand",
+- "foreign-types",
++ "foreign-types 0.5.0",
+  "js-sys",
+  "log",
+  "memmap2 0.9.11",
+@@ -5897,8 +5823,7 @@ dependencies = [
+ [[package]]
+ name = "target-lexicon"
+ version = "0.13.5"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "adb6935a6f5c20170eeceb1a3835a49e12e19d792f6dd344ccc76a985ca5a6ca"
++source = "git+https://github.com/helce/target-lexicon?tag=v0.13.5#7b4e97763baee275a2f488285a06e6bd5a4f853f"
+ 
+ [[package]]
+ name = "tauri-winrt-notification"
+@@ -6104,6 +6029,16 @@ dependencies = [
+  "syn 2.0.118",
+ ]
+ 
++[[package]]
++name = "tokio-native-tls"
++version = "0.3.1"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "bbae76ab933c85776efabc971569dd6119c580d8f5d448769dec1764bf796ef2"
++dependencies = [
++ "native-tls",
++ "tokio",
++]
++
+ [[package]]
+ name = "tokio-rustls"
+ version = "0.26.4"
+@@ -6504,6 +6439,12 @@ dependencies = [
+  "wasm-bindgen",
+ ]
+ 
++[[package]]
++name = "vcpkg"
++version = "0.2.15"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "accd4ea62f7bb7a82fe23066fb0957d48ef677f6eeb8215f372f52e48bb32426"
++
+ [[package]]
+ name = "version-compare"
+ version = "0.2.1"
+@@ -6789,15 +6730,6 @@ dependencies = [
+  "wasm-bindgen",
+ ]
+ 
+-[[package]]
+-name = "webpki-root-certs"
+-version = "1.0.8"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "0d46a5a140e6f7afeccd8eae97eff335163939eac8b929834875168b29b3d267"
+-dependencies = [
+- "rustls-pki-types",
+-]
+-
+ [[package]]
+ name = "weezl"
+ version = "0.1.12"
+diff --git a/Cargo.toml b/Cargo.toml
+index fbd4e22..644f730 100644
+--- a/Cargo.toml
++++ b/Cargo.toml
+@@ -15,7 +15,7 @@ open = "5"
+ paste = "1"
+ rayon = "1"
+ regex = "1"
+-reqwest = "0.13"
++reqwest = { version = "0.13", default-features = false, features = ["native-tls", "charset", "http2", "system-proxy"] }
+ serde = { version = "1", features = ["rc", "serde_derive"] }
+ spdx = { git = "https://github.com/jackpot51/spdx.git" }
+ tokio = { version = "1", features = ["sync"] }
+@@ -109,3 +109,31 @@ members = ["flathub-stats"]
+ 
+ # [patch.'https://github.com/jackpot51/spdx.git']
+ # spdx = { path = "../../spdx" }
++
++[patch."https://github.com/pop-os/libcosmic"]
++libcosmic = { git = "https://github.com/sanua356/libcosmic", branch = "sha18a7a75e" }
++cosmic-config = { git = "https://github.com/sanua356/libcosmic", package="cosmic-config", branch = "sha18a7a75e" }
++cosmic-theme = { git = "https://github.com/sanua356/libcosmic", package="cosmic-theme", branch = "sha18a7a75e" }
++iced = { git = "https://github.com/sanua356/libcosmic", package="iced", branch = "sha18a7a75e" }
++iced-accessibility = { git = "https://github.com/sanua356/libcosmic", package="iced_accessibility", branch = "sha18a7a75e" }
++iced-core = { git = "https://github.com/sanua356/libcosmic", package="iced_core", branch = "sha18a7a75e" }
++iced-debug = { git = "https://github.com/sanua356/libcosmic", package="iced_debug", branch = "sha18a7a75e" }
++iced-futures = { git = "https://github.com/sanua356/libcosmic", package="iced_futures", branch = "sha18a7a75e" }
++iced-graphics = { git = "https://github.com/sanua356/libcosmic", package="iced_graphics", branch = "sha18a7a75e" }
++iced-program = { git = "https://github.com/sanua356/libcosmic", package="iced_program", branch = "sha18a7a75e" }
++iced-renderer = { git = "https://github.com/sanua356/libcosmic", package="iced_renderer", branch = "sha18a7a75e" }
++iced-runtime = { git = "https://github.com/sanua356/libcosmic", package="iced_runtime", branch = "sha18a7a75e" }
++iced-tiny-skia = { git = "https://github.com/sanua356/libcosmic", package="iced_tiny_skia", branch = "sha18a7a75e" }
++iced-wgpu = { git = "https://github.com/sanua356/libcosmic", package="iced_wgpu", branch = "sha18a7a75e" }
++iced-widget = { git = "https://github.com/sanua356/libcosmic", package="iced_widget", branch = "sha18a7a75e" }
++iced-winit = { git = "https://github.com/sanua356/libcosmic", package="iced_winit", branch = "sha18a7a75e" }
++
++
++[patch.crates-io]
++libc = { git = "https://github.com/helce/libc", tag = "0.2.186" }
++linux_raw_sys_04 = { package = "linux-raw-sys", git = "https://github.com/helce/linux-raw-sys", tag = "v0.4.15" }
++linux_raw_sys_06 = { package = "linux-raw-sys", git = "https://github.com/helce/linux-raw-sys", tag = "v0.6.5" }
++linux_raw_sys_12 = { package = "linux-raw-sys", git = "https://github.com/helce/linux-raw-sys", tag = "v0.12.1" }
++rustix_1 = { package = "rustix", git = "https://github.com/helce/rustix", tag = "v1.1.4" }
++rustix_0_38 = { package = "rustix", git = "https://github.com/helce/rustix", tag = "0.38.44" }
++target-lexicon = { package = "target-lexicon", git = "https://github.com/helce/target-lexicon", tag = "v0.13.5" }
+diff --git a/flathub-stats/Cargo.toml b/flathub-stats/Cargo.toml
+index cc767c8..93c1a31 100644
+--- a/flathub-stats/Cargo.toml
++++ b/flathub-stats/Cargo.toml
+@@ -5,7 +5,7 @@ edition = "2024"
+ 
+ [dependencies]
+ bitcode = { version = "0.6", features = ["serde"] }
+-reqwest = "0.13"
++reqwest = { version = "0.13", default-features = false, features = ["native-tls", "charset", "http2", "system-proxy"] }
+ serde = { version = "1", features = ["derive"] }
+ serde_json = "1"
+ tokio = { version = "1", features = ["full"] }
+diff --git a/justfile b/justfile
+index 7808d81..643f1cb 100644
+--- a/justfile
++++ b/justfile
+@@ -39,7 +39,7 @@ clean-dist: clean clean-vendor
+ 
+ # Compiles with debug profile
+ build-debug *args:
+-    cargo build {{args}}
++    ZSTD_SYS_USE_PKG_CONFIG=1 cargo build {{args}}
+ 
+ # Compiles with release profile
+ build-release *args: (build-debug '--release' args)
+-- 
+2.50.1
+
