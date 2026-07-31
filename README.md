@@ -21,4 +21,9 @@ A repository with a set of patches for various software for the E2K (Elbrus 2000
 
 - [v1.2](https://github.com/sanua356/e2k_patches/tree/master/cosmic-epoch-1.2.0)
 
+## Cargo-make
+
+- [v0.37.24](https://github.com/sanua356/e2k_patches/tree/master/cargo_make_0_37_24)
+
+
 [More patches for utility crates here.](https://gist.github.com/sanua356/1169895848749f2231a9cf5db2db3133)

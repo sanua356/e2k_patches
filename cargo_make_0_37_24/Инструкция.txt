@@ -1,0 +1,6 @@
+Сборка:
+0. Поставить rust компилятор стабильной версии 1.93.
+1. Склонировать с Github репозиторий cargo-make. https://github.com/sagiegurari/cargo-make
+2. Переключиться на тег 0.37.24. git checkout git checkout 0.37.24
+3. Применить патч "0001-add-e2k-support.patch" к корню репозитория "cargo-make".
+4. Сборка проводится командой "cargo build --release" в корне каталога "cargo-make".
