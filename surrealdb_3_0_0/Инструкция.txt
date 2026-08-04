@@ -1,0 +1,6 @@
+Сборка:
+0. Поставить rust компилятор стабильной версии 1.93.
+1. Склонировать с Github репозиторий surrealdb. https://github.com/surrealdb/surrealdb
+2. Переключиться на тег v3.0.0. git checkout v3.0.0
+3. Применить патч "0001-add-e2k-support.patch" к корню репозитория "surrealdb".
+4. Сборка проводится командой "ZSTD_SYS_USE_PKG_CONFIG=1 ROCKSDB_COMPILE=0 ROCKSDB_LIB_DIR=/usr/include/rocksdb make build" в корне каталога "surrealdb" (Требуется предварительно установить "cargo-make" в окружение ОС).
