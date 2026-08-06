@@ -37,4 +37,8 @@ A repository with a set of patches for various software for the E2K (Elbrus 2000
 
 - [v3.0.0](https://github.com/sanua356/e2k_patches/tree/master/surrealdb_3_0_0)
 
+## Helix
+
+- [v25.07.1](https://github.com/sanua356/e2k_patches/tree/master/helix_25_07_1)
+
 [More patches for utility crates here.](https://gist.github.com/sanua356/1169895848749f2231a9cf5db2db3133)

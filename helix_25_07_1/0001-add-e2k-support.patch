@@ -1,0 +1,134 @@
+From 54605d1d0fbe43125d8985ce2875c8cc8105c470 Mon Sep 17 00:00:00 2001
+From: sanua356 <sanek.pankratov356@gmail.com>
+Date: Thu, 6 Aug 2026 15:57:37 +0300
+Subject: [PATCH] add e2k support
+
+---
+ Cargo.lock     | 19 +++++++------------
+ Cargo.toml     |  8 ++++++++
+ languages.toml | 23 -----------------------
+ 3 files changed, 15 insertions(+), 35 deletions(-)
+
+diff --git a/Cargo.lock b/Cargo.lock
+index b4a663cb8..2964abf94 100644
+--- a/Cargo.lock
++++ b/Cargo.lock
+@@ -1976,8 +1976,7 @@ dependencies = [
+ [[package]]
+ name = "libc"
+ version = "0.2.174"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "1171693293099992e19cddea4e8b849964e9846f4acee11b3948bcc337be8776"
++source = "git+https://github.com/helce/libc?tag=0.2.174#600d29cc689c4934036bafc5073c9903697e55a1"
+ 
+ [[package]]
+ name = "libloading"
+@@ -2012,14 +2011,12 @@ dependencies = [
+ [[package]]
+ name = "linux-raw-sys"
+ version = "0.4.14"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "78b3ae25bc7c8c38cec158d1f2757ee79e9b3740fbc7ccf0e59e4b08d793fa89"
++source = "git+https://github.com/helce/linux-raw-sys?tag=v0.4.14#fee91e663a1d406573b4a4e42a7de0589d7e8d29"
+ 
+ [[package]]
+ name = "linux-raw-sys"
+ version = "0.9.2"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "6db9c683daf087dc577b7506e9695b3d556a9f3849903fa28186283afd6809e9"
++source = "git+https://github.com/helce/linux-raw-sys?tag=v0.9.2#e8820ae2e3812805028997f3d82217c6b1088dd0"
+ 
+ [[package]]
+ name = "litemap"
+@@ -2384,27 +2381,25 @@ checksum = "719b953e2095829ee67db738b3bfa9fa368c94900df327b3f07fe6e794d2fe1f"
+ [[package]]
+ name = "rustix"
+ version = "0.38.44"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "fdb5bc1ae2baa591800df16c9ca78619bf65c0488b41b96ccec5d11220d8c154"
++source = "git+https://github.com/helce/rustix?tag=0.38.44#8daff198d899a0eb3627f7b034f0752e87a2fb07"
+ dependencies = [
+  "bitflags",
+  "errno",
+  "libc",
+  "linux-raw-sys 0.4.14",
+- "windows-sys 0.59.0",
++ "windows-sys 0.52.0",
+ ]
+ 
+ [[package]]
+ name = "rustix"
+ version = "1.0.7"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "c71e83d6afe7ff64890ec6b71d6a69bb8a610ab78ce364b3352876bb4c801266"
++source = "git+https://github.com/helce/rustix?tag=v1.0.7#12d784fa22030fbbb01b0cff1082332ad100839e"
+ dependencies = [
+  "bitflags",
+  "errno",
+  "libc",
+  "linux-raw-sys 0.9.2",
+- "windows-sys 0.59.0",
++ "windows-sys 0.52.0",
+ ]
+ 
+ [[package]]
+diff --git a/Cargo.toml b/Cargo.toml
+index 4296ac9b0..587a206e9 100644
+--- a/Cargo.toml
++++ b/Cargo.toml
+@@ -60,3 +60,11 @@ repository = "https://github.com/helix-editor/helix"
+ homepage = "https://helix-editor.com"
+ license = "MPL-2.0"
+ rust-version = "1.82"
++
++
++[patch.crates-io]
++libc = { git = "https://github.com/helce/libc", tag = "0.2.174" }
++linux_raw_sys_04 = { package = "linux-raw-sys", git = "https://github.com/helce/linux-raw-sys", tag = "v0.4.14" }
++linux_raw_sys_09 = { package = "linux-raw-sys", git = "https://github.com/helce/linux-raw-sys", tag = "v0.9.2" }
++rustix = { git = "https://github.com/helce/rustix", tag = "0.38.44" }
++rustix1 = { package = "rustix", git = "https://github.com/helce/rustix", tag = "v1.0.7" }
+diff --git a/languages.toml b/languages.toml
+index 670904fed..f11017b46 100644
+--- a/languages.toml
++++ b/languages.toml
+@@ -794,20 +794,6 @@ indent = { tab-width = 4, unit = "\t" }
+ name = "gomod"
+ source = { git = "https://github.com/camdencheek/tree-sitter-go-mod", rev = "6efb59652d30e0e9cd5f3b3a669afd6f1a926d3c" }
+ 
+-[[language]]
+-name = "gotmpl"
+-scope = "source.gotmpl"
+-injection-regex = "gotmpl"
+-file-types = ["gotmpl"]
+-comment-token = "//"
+-block-comment-tokens = { start = "/*", end = "*/" }
+-language-servers = [ "gopls" ]
+-indent = { tab-width = 2, unit = " " }
+-
+-[[grammar]]
+-name = "gotmpl"
+-source = { git = "https://github.com/dannylongeuay/tree-sitter-go-template", rev = "395a33e08e69f4155156f0b90138a6c86764c979" }
+-
+ [[language]]
+ name = "gowork"
+ scope = "source.gowork"
+@@ -3879,15 +3865,6 @@ language-servers = [
+   ], name = "bash-language-server" },
+ ]
+ 
+-[[language]]
+-name = "helm"
+-grammar = "gotmpl"
+-scope = "source.helm"
+-roots = ["Chart.yaml"]
+-comment-token = "#"
+-language-servers = ["helm_ls"]
+-file-types = [ { glob = "templates/*.yaml" }, { glob = "templates/*.yml" }, { glob = "templates/_*.tpl"}, { glob = "templates/NOTES.txt" } ]
+-
+ [[language]]
+ name = "glimmer"
+ scope = "source.glimmer"
+-- 
+2.50.1
+

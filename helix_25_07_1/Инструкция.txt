@@ -1,0 +1,6 @@
+Сборка:
+0. Поставить rust компилятор стабильной версии 1.93.
+1. Склонировать с Github репозиторий helix. https://github.com/helix-editor/helix
+2. Переключиться на коммит с тегом 25.07.1. git checkout git checkout 25.07.1
+3. Применить патч "0001-add-e2k-support.patch" к корню репозитория "helix".
+4. Сборка проводится командой "cargo build --release" в корне каталога "helix".
