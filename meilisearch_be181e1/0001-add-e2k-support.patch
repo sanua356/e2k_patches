@@ -1,0 +1,302 @@
+From a5838c2ce0a92462daa854907656e2653ad52f9a Mon Sep 17 00:00:00 2001
+From: sanua356 <sanek.pankratov356@gmail.com>
+Date: Sat, 8 Aug 2026 13:08:29 +0300
+Subject: [PATCH] add e2k support
+
+---
+ Cargo.lock | 108 +++++++----------------------------------------------
+ Cargo.toml |  12 +++++-
+ 2 files changed, 24 insertions(+), 96 deletions(-)
+
+diff --git a/Cargo.lock b/Cargo.lock
+index 0781515b0..feb9f9698 100644
+--- a/Cargo.lock
++++ b/Cargo.lock
+@@ -1053,8 +1053,7 @@ dependencies = [
+ [[package]]
+ name = "cc"
+ version = "1.2.63"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "556e016178bb5662a08681bbe0f00f8e17631781a4dfc8c45e466e4b185ec27f"
++source = "git+https://github.com/helce/cc-rs?tag=cc-v1.2.63#c71e3a3d39a2dbe81c2d0069d99e4925429716eb"
+ dependencies = [
+  "find-msvc-tools",
+  "jobserver",
+@@ -2282,8 +2281,7 @@ dependencies = [
+ [[package]]
+ name = "find-msvc-tools"
+ version = "0.1.9"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "5baebc0774151f905a1a2cc41989300b1e6fbb29aff0ceffa1064fdd3088d582"
++source = "git+https://github.com/helce/cc-rs?tag=cc-v1.2.63#c71e3a3d39a2dbe81c2d0069d99e4925429716eb"
+ 
+ [[package]]
+ name = "flate2"
+@@ -3334,7 +3332,7 @@ dependencies = [
+  "libc",
+  "percent-encoding",
+  "pin-project-lite",
+- "socket2 0.6.4",
++ "socket2 0.5.10",
+  "tokio",
+  "tower-service",
+  "tracing",
+@@ -3873,8 +3871,7 @@ dependencies = [
+ [[package]]
+ name = "libc"
+ version = "0.2.186"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "68ab91017fe16c622486840e4c83c9a37afeff978bd239b5293d61ece587de66"
++source = "git+https://github.com/helce/libc?tag=0.2.186#8bcdcacc4c1e79c70571473bcfdff6e1a8df33c2"
+ 
+ [[package]]
+ name = "libflate"
+@@ -4088,14 +4085,12 @@ checksum = "0717cef1bc8b636c6e1c1bbdefc09e6322da8a9321966e8928ef80d20f7f770f"
+ [[package]]
+ name = "linux-raw-sys"
+ version = "0.4.15"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "d26c52dbd32dccf2d10cac7725f8eae5296885fb5703b261f7d0a0739ec807ab"
++source = "git+https://github.com/helce/linux-raw-sys?tag=v0.4.15#a0fa97804fdeee231566e5f5005512794e1a76ab"
+ 
+ [[package]]
+ name = "linux-raw-sys"
+ version = "0.12.1"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "32a66949e030da00e8c7d4434b251670a91556f4144941d37452769c25d58a53"
++source = "git+https://github.com/helce/linux-raw-sys?tag=v0.12.1#1555c7dee43aa0547c625cdd56b1c342f50867c4"
+ 
+ [[package]]
+ name = "liquid"
+@@ -5559,7 +5554,7 @@ dependencies = [
+  "quinn-udp",
+  "rustc-hash",
+  "rustls",
+- "socket2 0.6.4",
++ "socket2 0.5.10",
+  "thiserror 2.0.18",
+  "tokio",
+  "tracing",
+@@ -5596,9 +5591,9 @@ dependencies = [
+  "cfg_aliases",
+  "libc",
+  "once_cell",
+- "socket2 0.6.4",
++ "socket2 0.5.10",
+  "tracing",
+- "windows-sys 0.60.2",
++ "windows-sys 0.59.0",
+ ]
+ 
+ [[package]]
+@@ -5943,8 +5938,7 @@ dependencies = [
+ [[package]]
+ name = "ring"
+ version = "0.17.14"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "a4689e6c2294d81e88dc6261c768b63bc4fcdb852be6d1352498b114f61383b7"
++source = "git+https://github.com/helce/ring?tag=0.17.14#75d8456acaea27d50b77ce9f47e0a17f500c273c"
+ dependencies = [
+  "cc",
+  "cfg-if",
+@@ -6187,8 +6181,7 @@ dependencies = [
+ [[package]]
+ name = "rustix"
+ version = "0.38.44"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "fdb5bc1ae2baa591800df16c9ca78619bf65c0488b41b96ccec5d11220d8c154"
++source = "git+https://github.com/helce/rustix?tag=0.38.44#8daff198d899a0eb3627f7b034f0752e87a2fb07"
+ dependencies = [
+  "bitflags 2.12.1",
+  "errno",
+@@ -6200,8 +6193,7 @@ dependencies = [
+ [[package]]
+ name = "rustix"
+ version = "1.1.4"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "b6fe4565b9518b83ef4f91bb47ce29620ca828bd32cb7e408f0062e9930ba190"
++source = "git+https://github.com/helce/rustix?tag=v1.1.4#a64f3722f385ced778684547353884b4a97d7652"
+ dependencies = [
+  "bitflags 2.12.1",
+  "errno",
+@@ -8299,15 +8291,6 @@ dependencies = [
+  "windows-targets 0.52.6",
+ ]
+ 
+-[[package]]
+-name = "windows-sys"
+-version = "0.60.2"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "f2f500e4d28234f72040990ec9d39e3a6b950f9f22d3dba18416c35882612bcb"
+-dependencies = [
+- "windows-targets 0.53.5",
+-]
+-
+ [[package]]
+ name = "windows-sys"
+ version = "0.61.2"
+@@ -8341,30 +8324,13 @@ dependencies = [
+  "windows_aarch64_gnullvm 0.52.6",
+  "windows_aarch64_msvc 0.52.6",
+  "windows_i686_gnu 0.52.6",
+- "windows_i686_gnullvm 0.52.6",
++ "windows_i686_gnullvm",
+  "windows_i686_msvc 0.52.6",
+  "windows_x86_64_gnu 0.52.6",
+  "windows_x86_64_gnullvm 0.52.6",
+  "windows_x86_64_msvc 0.52.6",
+ ]
+ 
+-[[package]]
+-name = "windows-targets"
+-version = "0.53.5"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "4945f9f551b88e0d65f3db0bc25c33b8acea4d9e41163edf90dcd0b19f9069f3"
+-dependencies = [
+- "windows-link",
+- "windows_aarch64_gnullvm 0.53.1",
+- "windows_aarch64_msvc 0.53.1",
+- "windows_i686_gnu 0.53.1",
+- "windows_i686_gnullvm 0.53.1",
+- "windows_i686_msvc 0.53.1",
+- "windows_x86_64_gnu 0.53.1",
+- "windows_x86_64_gnullvm 0.53.1",
+- "windows_x86_64_msvc 0.53.1",
+-]
+-
+ [[package]]
+ name = "windows-threading"
+ version = "0.2.1"
+@@ -8386,12 +8352,6 @@ version = "0.52.6"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+ checksum = "32a4622180e7a0ec044bb555404c800bc9fd9ec262ec147edd5989ccd0c02cd3"
+ 
+-[[package]]
+-name = "windows_aarch64_gnullvm"
+-version = "0.53.1"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "a9d8416fa8b42f5c947f8482c43e7d89e73a173cead56d044f6a56104a6d1b53"
+-
+ [[package]]
+ name = "windows_aarch64_msvc"
+ version = "0.48.5"
+@@ -8404,12 +8364,6 @@ version = "0.52.6"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+ checksum = "09ec2a7bb152e2252b53fa7803150007879548bc709c039df7627cabbd05d469"
+ 
+-[[package]]
+-name = "windows_aarch64_msvc"
+-version = "0.53.1"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "b9d782e804c2f632e395708e99a94275910eb9100b2114651e04744e9b125006"
+-
+ [[package]]
+ name = "windows_i686_gnu"
+ version = "0.48.5"
+@@ -8422,24 +8376,12 @@ version = "0.52.6"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+ checksum = "8e9b5ad5ab802e97eb8e295ac6720e509ee4c243f69d781394014ebfe8bbfa0b"
+ 
+-[[package]]
+-name = "windows_i686_gnu"
+-version = "0.53.1"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "960e6da069d81e09becb0ca57a65220ddff016ff2d6af6a223cf372a506593a3"
+-
+ [[package]]
+ name = "windows_i686_gnullvm"
+ version = "0.52.6"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+ checksum = "0eee52d38c090b3caa76c563b86c3a4bd71ef1a819287c19d586d7334ae8ed66"
+ 
+-[[package]]
+-name = "windows_i686_gnullvm"
+-version = "0.53.1"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "fa7359d10048f68ab8b09fa71c3daccfb0e9b559aed648a8f95469c27057180c"
+-
+ [[package]]
+ name = "windows_i686_msvc"
+ version = "0.48.5"
+@@ -8452,12 +8394,6 @@ version = "0.52.6"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+ checksum = "240948bc05c5e7c6dabba28bf89d89ffce3e303022809e73deaefe4f6ec56c66"
+ 
+-[[package]]
+-name = "windows_i686_msvc"
+-version = "0.53.1"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "1e7ac75179f18232fe9c285163565a57ef8d3c89254a30685b57d83a38d326c2"
+-
+ [[package]]
+ name = "windows_x86_64_gnu"
+ version = "0.48.5"
+@@ -8470,12 +8406,6 @@ version = "0.52.6"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+ checksum = "147a5c80aabfbf0c7d901cb5895d1de30ef2907eb21fbbab29ca94c5b08b1a78"
+ 
+-[[package]]
+-name = "windows_x86_64_gnu"
+-version = "0.53.1"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "9c3842cdd74a865a8066ab39c8a7a473c0778a3f29370b5fd6b4b9aa7df4a499"
+-
+ [[package]]
+ name = "windows_x86_64_gnullvm"
+ version = "0.48.5"
+@@ -8488,12 +8418,6 @@ version = "0.52.6"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+ checksum = "24d5b23dc417412679681396f2b49f3de8c1473deb516bd34410872eff51ed0d"
+ 
+-[[package]]
+-name = "windows_x86_64_gnullvm"
+-version = "0.53.1"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "0ffa179e2d07eee8ad8f57493436566c7cc30ac536a3379fdf008f47f6bb7ae1"
+-
+ [[package]]
+ name = "windows_x86_64_msvc"
+ version = "0.48.5"
+@@ -8506,12 +8430,6 @@ version = "0.52.6"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+ checksum = "589f6da84c646204747d1270a2a5661ea66ed1cced2631d546fdfb155959f9ec"
+ 
+-[[package]]
+-name = "windows_x86_64_msvc"
+-version = "0.53.1"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "d6bbff5f0aada427a1e5a6da5f1f98158182f26556f345ac9e04d36d0ebed650"
+-
+ [[package]]
+ name = "winnow"
+ version = "0.7.15"
+diff --git a/Cargo.toml b/Cargo.toml
+index e84561535..5ed0bd1e0 100644
+--- a/Cargo.toml
++++ b/Cargo.toml
+@@ -42,7 +42,8 @@ license = "MIT"
+ mimalloc = { version = "0.1.48", default-features = false, features = ["v3", "override"] }
+ 
+ [profile.release]
+-codegen-units = 1
++codegen-units = 16
++lto = "thin"
+ 
+ [profile.release-with-debug]
+ inherits = "release"
+@@ -63,3 +64,12 @@ opt-level = 3
+ opt-level = 3
+ [profile.dev.package.gemm-f16]
+ opt-level = 3
++
++[patch.crates-io]
++libc = { git = "https://github.com/helce/libc", tag = "0.2.186" }
++rustix14 = { package = "rustix", git = "https://github.com/helce/rustix", tag = "v1.1.4" }
++rustix0_38 = { package = "rustix", git = "https://github.com/helce/rustix", tag = "0.38.44" }
++ring = { git = "https://github.com/helce/ring", tag = "0.17.14" }
++cc = { git = "https://github.com/helce/cc-rs", tag = "cc-v1.2.63" }
++linux_raw_sys_0_12 = { package = "linux-raw-sys", git = "https://github.com/helce/linux-raw-sys", tag = "v0.12.1" }
++linux_raw_sys_0_4 = { package = "linux-raw-sys", git = "https://github.com/helce/linux-raw-sys", tag = "v0.4.15" }
+-- 
+2.50.1
+

@@ -1,0 +1,6 @@
+Сборка:
+0. Поставить rust компилятор стабильной версии 1.93.
+1. Склонировать с Github репозиторий helix. https://github.com/meilisearch/meilisearch
+2. Переключиться на коммит с хэшем be181e1. git checkout be181e1
+3. Применить патч "0001-add-e2k-support.patch" к корню репозитория "meilisearch".
+4. Сборка проводится командой "ZSTD_SYS_USE_PKG_CONFIG=1 cargo build --release" в корне каталога "meilisearch".
