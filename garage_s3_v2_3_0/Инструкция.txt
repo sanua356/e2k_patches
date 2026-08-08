@@ -1,0 +1,6 @@
+Сборка:
+0. Поставить rust компилятор стабильной версии 1.93.
+1. Склонировать с Github репозиторий garage. https://git.deuxfleurs.fr/Deuxfleurs/garage
+2. Переключиться на коммит с тегом v2.3.0. git checkout git checkout v2.3.0
+3. Применить патч "0001-add-e2k-support.patch" к корню репозитория "garage".
+4. Сборка проводится командой "OPENSSL_CONFIG_DIR=/var/lib/ssl OPENSSL_NO_VENDOR=1 ZSTD_SYS_USE_PKG_CONFIG=1 SODIUM_USE_PKG_CONFIG=1 cargo build --release" в корне каталога "garage".
