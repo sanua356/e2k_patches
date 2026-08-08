@@ -45,4 +45,8 @@ A repository with a set of patches for various software for the E2K (Elbrus 2000
 
 - [v2.3.0](https://github.com/sanua356/e2k_patches/tree/master/garage_s3_v2_3_0)
 
+## Shadowsocks Rust
+
+- [v1.24.0](https://github.com/sanua356/e2k_patches/tree/master/shadowsocks_rust_v1_24_0)
+
 [More patches for utility crates here.](https://gist.github.com/sanua356/1169895848749f2231a9cf5db2db3133)

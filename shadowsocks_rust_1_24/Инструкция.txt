@@ -1,0 +1,6 @@
+Сборка:
+0. Поставить rust компилятор стабильной версии 1.93.
+1. Склонировать с Github репозиторий shadowsocks-rust. https://github.com/shadowsocks/shadowsocks-rust
+2. Переключиться на коммит с тегом v1.24.0. git checkout git checkout v1.24.0
+3. Применить патч "0001-add-e2k-support.patch" к корню репозитория "shadowsocks-rust".
+4. Сборка проводится командой "ZSTD_SYS_USE_PKG_CONFIG=1 cargo build --release" в корне каталога "shadowsocks-rust".
