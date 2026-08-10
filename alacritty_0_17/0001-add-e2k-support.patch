@@ -1,0 +1,91 @@
+From d9c208744245f7e0bed275528531d6549150c6bd Mon Sep 17 00:00:00 2001
+From: sanua356 <sanek.pankratov356@gmail.com>
+Date: Mon, 10 Aug 2026 19:49:54 +0300
+Subject: [PATCH] add e2k support
+
+---
+ Cargo.lock | 19 +++++++------------
+ Cargo.toml |  7 +++++++
+ 2 files changed, 14 insertions(+), 12 deletions(-)
+
+diff --git a/Cargo.lock b/Cargo.lock
+index 086edf4f..5d2bcaa3 100644
+--- a/Cargo.lock
++++ b/Cargo.lock
+@@ -987,8 +987,7 @@ checksum = "bbd2bcb4c963f2ddae06a2efc7e9f3591312473c50c6685e1f298068316e66fe"
+ [[package]]
+ name = "libc"
+ version = "0.2.176"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "58f929b4d672ea937a23a1ab494143d968337a5f47e56d0815df1e0890ddf174"
++source = "git+https://github.com/helce/libc?tag=0.2.176#ba27a1a1fb66117bd0742edfccfcfbf86b38ed9e"
+ 
+ [[package]]
+ name = "libloading"
+@@ -1014,14 +1013,12 @@ dependencies = [
+ [[package]]
+ name = "linux-raw-sys"
+ version = "0.4.15"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "d26c52dbd32dccf2d10cac7725f8eae5296885fb5703b261f7d0a0739ec807ab"
++source = "git+https://github.com/helce/linux-raw-sys?tag=v0.4.15#a0fa97804fdeee231566e5f5005512794e1a76ab"
+ 
+ [[package]]
+ name = "linux-raw-sys"
+ version = "0.11.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "df1d3c3b53da64cf5760482273a98e575c651a67eec7f77df96b5b642de8f039"
++source = "git+https://github.com/helce/linux-raw-sys?tag=v0.11.0#50d1c32ee834554e61e59ba9141ce88952e60873"
+ 
+ [[package]]
+ name = "lock_api"
+@@ -1641,27 +1638,25 @@ dependencies = [
+ [[package]]
+ name = "rustix"
+ version = "0.38.44"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "fdb5bc1ae2baa591800df16c9ca78619bf65c0488b41b96ccec5d11220d8c154"
++source = "git+https://github.com/helce/rustix?tag=0.38.44#8daff198d899a0eb3627f7b034f0752e87a2fb07"
+ dependencies = [
+  "bitflags 2.9.4",
+  "errno",
+  "libc",
+  "linux-raw-sys 0.4.15",
+- "windows-sys 0.59.0",
++ "windows-sys 0.52.0",
+ ]
+ 
+ [[package]]
+ name = "rustix"
+ version = "1.1.2"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "cd15f8a2c5551a84d56efdc1cd049089e409ac19a3072d5037a17fd70719ff3e"
++source = "git+https://github.com/helce/rustix?tag=v1.1.2#80f26fcfab105d3faa6ff6b93ed53fcf81c5ff65"
+ dependencies = [
+  "bitflags 2.9.4",
+  "errno",
+  "libc",
+  "linux-raw-sys 0.11.0",
+- "windows-sys 0.60.2",
++ "windows-sys 0.52.0",
+ ]
+ 
+ [[package]]
+diff --git a/Cargo.toml b/Cargo.toml
+index 8351a01d..781cb7b0 100644
+--- a/Cargo.toml
++++ b/Cargo.toml
+@@ -19,3 +19,10 @@ incremental = false
+ [workspace.dependencies]
+ toml = "0.9.11"
+ toml_edit = "0.24.0"
++
++[patch.crates-io]
++libc = { git = "https://github.com/helce/libc", tag = "0.2.176" }
++linux_raw_sys_04 = { package = "linux-raw-sys", git = "https://github.com/helce/linux-raw-sys", tag = "v0.4.15" }
++linux_raw_sys_11 = { package = "linux-raw-sys", git = "https://github.com/helce/linux-raw-sys", tag = "v0.11.0" }
++rustix = { git = "https://github.com/helce/rustix", tag = "0.38.44" }
++rustix1 = { package = "rustix", git = "https://github.com/helce/rustix", tag = "v1.1.2" }
+-- 
+2.50.1
+
