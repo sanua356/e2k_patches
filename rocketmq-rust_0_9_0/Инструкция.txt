@@ -1,0 +1,6 @@
+Сборка:
+0. Поставить rust компилятор стабильной версии 1.93.
+1. Склонировать с Github репозиторий rocketmq-rust. https://github.com/mxsm/rocketmq-rust
+2. Переключиться на коммит с тегом v0.9.0. git checkout v0.9.0
+3. Применить патч "0001-add-e2k-support.patch" к корню репозитория "rocketmq-rust".
+4. Сборка проводится командой "ZSTD_SYS_USE_PKG_CONFIG=1 ROCKSDB_COMPILE=0 ROCKSDB_LIB_DIR=/usr/include/rocksdb cargo build --release" в корне каталога "rocketmq-rust".
