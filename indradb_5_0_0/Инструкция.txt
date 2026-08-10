@@ -1,0 +1,6 @@
+Сборка:
+0. Поставить rust компилятор стабильной версии 1.93.
+1. Склонировать с Github репозиторий indradb. https://github.com/indradb/indradb
+2. Переключиться на коммит с тегом v5.0.0. git checkout v5.0.0
+3. Применить патч "0001-add-e2k-support.patch" к корню репозитория "indradb".
+4. Сборка проводится командой "cargo build --release" в корне каталога "indradb".

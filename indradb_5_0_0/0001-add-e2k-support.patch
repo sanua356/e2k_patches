@@ -1,0 +1,84 @@
+From 5f7460fcec7e6906f53fa78188dc54e51723af82 Mon Sep 17 00:00:00 2001
+From: sanua356 <sanek.pankratov356@gmail.com>
+Date: Mon, 10 Aug 2026 19:54:25 +0300
+Subject: [PATCH] add e2k support
+
+---
+ Cargo.lock | 17 +++++++++--------
+ Cargo.toml |  9 ++++++++-
+ 2 files changed, 17 insertions(+), 9 deletions(-)
+
+diff --git a/Cargo.lock b/Cargo.lock
+index d216759..4479bb5 100644
+--- a/Cargo.lock
++++ b/Cargo.lock
+@@ -253,8 +253,7 @@ dependencies = [
+ [[package]]
+ name = "cc"
+ version = "1.2.10"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "13208fcbb66eaeffe09b99fffbe1af420f00a7b35aa99ad683dfc1aa76145229"
++source = "git+https://github.com/helce/cc-rs?tag=cc-v1.2.10#f0827b2c8be77364ab27052661c7257d6995c4bb"
+ dependencies = [
+  "jobserver",
+  "libc",
+@@ -730,8 +729,7 @@ checksum = "830d08ce1d1d941e6b30645f1a0eb5643013d835ce3779a5fc208261dbe10f55"
+ [[package]]
+ name = "libc"
+ version = "0.2.169"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "b5aba8db14291edd000dfcc4d620c7ebfb122c613afb886ca8803fa4e128a20a"
++source = "git+https://github.com/helce/libc?tag=0.2.169#373376db854cbf0afb00ea3f429eceeb7bde4d46"
+ 
+ [[package]]
+ name = "libloading"
+@@ -772,8 +770,7 @@ dependencies = [
+ [[package]]
+ name = "linux-raw-sys"
+ version = "0.4.13"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "01cda141df6706de531b6c46c3a33ecca755538219bd484262fa09410c13539c"
++source = "git+https://github.com/helce/linux-raw-sys?tag=v0.4.13#248adf06624743a241d14443a21bdf9f06da7525"
+ 
+ [[package]]
+ name = "log"
+@@ -1146,8 +1143,7 @@ dependencies = [
+ [[package]]
+ name = "rustix"
+ version = "0.38.31"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "6ea3e1a662af26cd7a3ba09c0297a31af215563ecf42817c98df621387f4e949"
++source = "git+https://github.com/helce/rustix?tag=0.38.31#eda5dfa9d64e983ffb4bbd83924a8c5de91b00e0"
+ dependencies = [
+  "bitflags 2.4.2",
+  "errno",
+@@ -1601,3 +1597,8 @@ dependencies = [
+  "cc",
+  "pkg-config",
+ ]
++
++[[patch.unused]]
++name = "rustix"
++version = "1.1.4"
++source = "git+https://github.com/helce/rustix?tag=v1.1.4#a64f3722f385ced778684547353884b4a97d7652"
+diff --git a/Cargo.toml b/Cargo.toml
+index 9580364..55b3d75 100644
+--- a/Cargo.toml
++++ b/Cargo.toml
+@@ -9,4 +9,11 @@ members = [
+     "plugins/hello_world",
+     "plugins/host",
+     "plugins/naive_vertex_count",
+-]
+\ No newline at end of file
++]
++
++[patch.crates-io]
++libc = { git = "https://github.com/helce/libc", tag = "0.2.169" }
++rustix14 = { package = "rustix", git = "https://github.com/helce/rustix", tag = "v1.1.4" }
++rustix0_38 = { package = "rustix", git = "https://github.com/helce/rustix", tag = "0.38.31" }
++cc = { git = "https://github.com/helce/cc-rs", tag = "cc-v1.2.10" }
++linux_raw_sys_0_4 = { package = "linux-raw-sys", git = "https://github.com/helce/linux-raw-sys", tag = "v0.4.13" }
+-- 
+2.50.1
+
