@@ -1,0 +1,95 @@
+From b762e18cc61500acb3e5f7f8d8a063e26d8cf5f1 Mon Sep 17 00:00:00 2001
+From: sanua356 <sanek.pankratov356@gmail.com>
+Date: Mon, 17 Aug 2026 21:21:35 +0300
+Subject: [PATCH] add e2k support
+
+---
+ Cargo.lock | 15 +++++----------
+ Cargo.toml | 11 ++++++++---
+ 2 files changed, 13 insertions(+), 13 deletions(-)
+
+diff --git a/Cargo.lock b/Cargo.lock
+index 0a9c2fa..4248da9 100644
+--- a/Cargo.lock
++++ b/Cargo.lock
+@@ -300,8 +300,7 @@ dependencies = [
+ [[package]]
+ name = "cc"
+ version = "1.2.44"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "37521ac7aabe3d13122dc382493e20c9416f299d2ccd5b3a5340a2570cdeb0f3"
++source = "git+https://github.com/helce/cc-rs?tag=cc-v1.2.44#190eec01c0a94cdf67dbc8c4312471b541655b86"
+ dependencies = [
+  "find-msvc-tools",
+  "shlex 1.3.0",
+@@ -814,8 +813,7 @@ dependencies = [
+ [[package]]
+ name = "find-msvc-tools"
+ version = "0.1.4"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "52051878f80a721bb68ebfbc930e07b65ba72f2da88968ea5c06fd6ca3d3a127"
++source = "git+https://github.com/helce/cc-rs?tag=cc-v1.2.44#190eec01c0a94cdf67dbc8c4312471b541655b86"
+ 
+ [[package]]
+ name = "fixedbitset"
+@@ -1847,8 +1845,7 @@ checksum = "09edd9e8b54e49e587e4f6295a7d29c3ea94d469cb40ab8ca70b288248a81db2"
+ [[package]]
+ name = "libc"
+ version = "0.2.186"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "68ab91017fe16c622486840e4c83c9a37afeff978bd239b5293d61ece587de66"
++source = "git+https://github.com/helce/libc?tag=0.2.186#8bcdcacc4c1e79c70571473bcfdff6e1a8df33c2"
+ 
+ [[package]]
+ name = "libm"
+@@ -1878,8 +1875,7 @@ dependencies = [
+ [[package]]
+ name = "linux-raw-sys"
+ version = "0.12.1"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "32a66949e030da00e8c7d4434b251670a91556f4144941d37452769c25d58a53"
++source = "git+https://github.com/helce/linux-raw-sys?tag=v0.12.1#1555c7dee43aa0547c625cdd56b1c342f50867c4"
+ 
+ [[package]]
+ name = "litrs"
+@@ -2470,8 +2466,7 @@ dependencies = [
+ [[package]]
+ name = "rustix"
+ version = "1.1.4"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "b6fe4565b9518b83ef4f91bb47ce29620ca828bd32cb7e408f0062e9930ba190"
++source = "git+https://github.com/helce/rustix?tag=v1.1.4#a64f3722f385ced778684547353884b4a97d7652"
+ dependencies = [
+  "bitflags",
+  "errno",
+diff --git a/Cargo.toml b/Cargo.toml
+index 7e34be8..88e1c5d 100644
+--- a/Cargo.toml
++++ b/Cargo.toml
+@@ -109,11 +109,10 @@ path = "src/main.rs"
+ name = "dua"
+ 
+ [profile.release]
+-panic = 'abort'
+ incremental = false
+ overflow-checks = false
+-lto = "fat"
+-#codegen-units = 1
++lto = "off"
++codegen-units = 256
+ build-override = { opt-level = 3 }
+ 
+ [dev-dependencies]
+@@ -122,3 +121,9 @@ tempfile.workspace = true
+ 
+ [lints]
+ workspace = true
++
++[patch.crates-io]
++libc = { git = "https://github.com/helce/libc", tag = "0.2.186" }
++rustix14 = { package = "rustix", git = "https://github.com/helce/rustix", tag = "v1.1.4" }
++cc = { git = "https://github.com/helce/cc-rs", tag = "cc-v1.2.44" }
++linux_raw_sys_0_12 = { package = "linux-raw-sys", git = "https://github.com/helce/linux-raw-sys", tag = "v0.12.1" }
+-- 
+2.50.1
+
