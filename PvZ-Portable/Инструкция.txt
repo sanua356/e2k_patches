@@ -1,0 +1,5 @@
+Сборка:
+1. Склонировать с Github репозиторий PvZ-Portable. git clone https://github.com/wszqkzqk/PvZ-Portable
+2. Переключиться на нужный коммит. git checkout c0320539859169d3c3b5be2e68344cb1694602d4
+3. Применить патч "0001-e2k-backport-include-format.patch" к корню репозитория.
+4. Сборка проводится стандартным механизмом cmake, который описан в README.md репозитория игры.

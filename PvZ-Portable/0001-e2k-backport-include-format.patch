@@ -1,0 +1,1398 @@
+From 305b7d1c7c1e72bb72a7d4ff480eb40d3f716ea0 Mon Sep 17 00:00:00 2001
+From: Alexander Pankratov <pankratovar@basealt.ru>
+Date: Wed, 16 Sep 2026 09:54:45 +0300
+Subject: [PATCH] e2k backport #include<format>
+
+---
+ CMakeLists.txt                                |   5 +
+ src/Lawn/Board.cpp                            | 106 +++++++++---------
+ src/Lawn/Challenge.cpp                        |   9 +-
+ src/Lawn/CutScene.cpp                         |   5 +-
+ src/Lawn/LawnCommon.cpp                       |   5 +-
+ src/Lawn/Plant.cpp                            |   9 +-
+ src/Lawn/SeedPacket.cpp                       |   3 +-
+ src/Lawn/System/PlayerInfo.cpp                |   7 +-
+ src/Lawn/Widget/AlmanacDialog.cpp             |  11 +-
+ src/Lawn/Widget/ChallengeScreen.cpp           |   3 +-
+ src/Lawn/Widget/CheatDialog.cpp               |   5 +-
+ src/Lawn/Widget/CreditScreen.cpp              |   5 +-
+ src/Lawn/Widget/GameSelector.cpp              |   5 +-
+ src/Lawn/Widget/ZombatarWidget.cpp            |   3 +-
+ src/Lawn/Zombie.cpp                           |   3 +-
+ src/LawnApp.cpp                               |  15 ++-
+ src/PvzpLib/Definition.cpp                    |  12 +-
+ src/PvzpLib/Definition.h                      |   6 +-
+ src/PvzpLib/PvzpDebug.cpp                     |   6 +-
+ src/PvzpLib/PvzpDebug.h                       |  14 +--
+ src/PvzpLib/PvzpParticle.cpp                  |   5 +-
+ src/PvzpLib/PvzpStringFile.cpp                |   3 +-
+ src/PvzpLib/Reanimator.cpp                    |   5 +-
+ src/PvzpLib/Trail.cpp                         |   3 +-
+ src/SexyAppFramework/Common.h                 |  10 +-
+ src/SexyAppFramework/SexyAppBase.cpp          |   7 +-
+ src/SexyAppFramework/graphics/ImageFont.cpp   |   3 +-
+ src/SexyAppFramework/misc/Buffer.cpp          |   3 +-
+ src/SexyAppFramework/misc/Debug.cpp           |  11 +-
+ src/SexyAppFramework/misc/PerfTimer.cpp       |   5 +-
+ .../misc/PropertiesParser.cpp                 |   5 +-
+ src/SexyAppFramework/misc/ResourceManager.cpp |  29 +++--
+ 32 files changed, 156 insertions(+), 170 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 95ddcd6..61b490d 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -89,11 +89,13 @@ else()
+ 		find_library(VORBISFILE_LIBRARY NAMES vorbisfile libvorbisfile REQUIRED)
+ 		find_library(OPENMPT_LIBRARY NAMES openmpt libopenmpt REQUIRED)
+ 		find_library(MPG123_LIBRARY NAMES mpg123 libmpg123 REQUIRED)
++		find_library(FMT_LIBRARY NAMES fmt libfmt REQUIRED)
+ 
+ 		set(VORBIS_LIB ${VORBISFILE_LIBRARY} ${VORBIS_LIBRARY})
+ 		set(OGG_LIB ${OGG_LIBRARY})
+ 		set(OPENMPT_LIB ${OPENMPT_LIBRARY})
+ 		set(MPG123_LIB ${MPG123_LIBRARY})
++		set(FMT_LIB ${FMT_LIBRARY})
+ 	endif()
+ 	list(APPEND SOURCES
+ 		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/platform/default/Window.cpp
+@@ -225,12 +227,15 @@ if(EMSCRIPTEN)
+ 	)
+ 	set_target_properties(pvz-portable PROPERTIES SUFFIX ".html")
+ else()
++
++
+ 	target_link_libraries(pvz-portable PRIVATE
+ 		SDL2_mixer_ext_Static 
+ 		${OPENMPT_LIB} 
+ 		${MPG123_LIB} 
+ 		${VORBIS_LIB} 
+ 		${OGG_LIB} 
++		${FMT_LIB}
+ 		PNG::PNG
+ 		JPEG::JPEG
+ 		ZLIB::ZLIB
+diff --git a/src/Lawn/Board.cpp b/src/Lawn/Board.cpp
+index 665fcca..c135804 100644
+--- a/src/Lawn/Board.cpp
++++ b/src/Lawn/Board.cpp
+@@ -22,7 +22,7 @@
+ #include <time.h>
+ #include <algorithm>
+ #include <SDL.h>
+-#include <format>
++#include <fmt/format.h>
+ #include "ZenGarden.h"
+ #include "BoardInclude.h"
+ #include "LawnCommon.h"
+@@ -3227,7 +3227,7 @@ void Board::UpdateToolTip(const HitResult* theHitResult)
+ 			return;
+ 		}
+ 
+-		std::string aZombieName = std::format("[{}]", GetZombieDefinition(aZombie->mZombieType).mZombieName);
++		std::string aZombieName = fmt::format("[{}]", GetZombieDefinition(aZombie->mZombieType).mZombieName);
+ 		mToolTip->SetTitle(aZombieName);
+ 		if (mApp->CanShowAlmanac() && aZombie->mZombieType != ZombieType::ZOMBIE_REDEYE_GARGANTUAR)
+ 		{
+@@ -6542,29 +6542,29 @@ void Board::DrawProgressMeter(Graphics* g)
+ 	Color aColor(224, 187, 98);
+ 	if (mApp->mGameMode == GameMode::GAMEMODE_CHALLENGE_BEGHOULED || mApp->mGameMode == GameMode::GAMEMODE_CHALLENGE_BEGHOULED_TWIST)
+ 	{
+-		std::string aMatchStr = std::format("{}/{} {}", mChallenge->mChallengeScore, 75, PvzpStringTranslate("[MATCHES]"));
++		std::string aMatchStr = fmt::format("{}/{} {}", mChallenge->mChallengeScore, 75, PvzpStringTranslate("[MATCHES]"));
+ 		PvzpDrawString(g, aMatchStr, aPosX, 589, Sexy::FONT_DWARVENTODCRAFT12, aColor, DrawStringJustification::DS_ALIGN_CENTER);
+ 	}
+ 	else if (mApp->IsSquirrelLevel())
+ 	{
+-		std::string aMatchStr = std::format("{}/{} {}", mChallenge->mChallengeScore, 7, PvzpStringTranslate("[SQUIRRELS]"));
++		std::string aMatchStr = fmt::format("{}/{} {}", mChallenge->mChallengeScore, 7, PvzpStringTranslate("[SQUIRRELS]"));
+ 		PvzpDrawString(g, aMatchStr, aPosX, 589, Sexy::FONT_DWARVENTODCRAFT12, aColor, DrawStringJustification::DS_ALIGN_CENTER);
+ 	}
+ 	else if (mApp->mGameMode == GameMode::GAMEMODE_CHALLENGE_SLOT_MACHINE)
+ 	{
+ 		int aSunMoney = std::clamp(mSunMoney, 0, 2000);
+-		std::string aMatchStr = std::format("{}/{} {}", aSunMoney, 2000, PvzpStringTranslate("[SUN]"));
++		std::string aMatchStr = fmt::format("{}/{} {}", aSunMoney, 2000, PvzpStringTranslate("[SUN]"));
+ 		PvzpDrawString(g, aMatchStr, aPosX, 589, Sexy::FONT_DWARVENTODCRAFT12, aColor, DrawStringJustification::DS_ALIGN_CENTER);
+ 	}
+ 	else if (mApp->mGameMode == GameMode::GAMEMODE_CHALLENGE_ZOMBIQUARIUM)
+ 	{
+ 		int aSunMoney = std::clamp(mSunMoney, 0, 1000);
+-		std::string aMatchStr = std::format("{}/{} {}", aSunMoney, 1000, PvzpStringTranslate("[SUN]"));
++		std::string aMatchStr = fmt::format("{}/{} {}", aSunMoney, 1000, PvzpStringTranslate("[SUN]"));
+ 		PvzpDrawString(g, aMatchStr, aPosX, 589, Sexy::FONT_DWARVENTODCRAFT12, aColor, DrawStringJustification::DS_ALIGN_CENTER);
+ 	}
+ 	else if (mApp->IsIZombieLevel())
+ 	{
+-		std::string aMatchStr = std::format("{}/{} {}", mChallenge->mChallengeScore, 5, PvzpStringTranslate("[BRAINS]"));
++		std::string aMatchStr = fmt::format("{}/{} {}", mChallenge->mChallengeScore, 5, PvzpStringTranslate("[BRAINS]"));
+ 		PvzpDrawString(g, aMatchStr, aPosX, 589, Sexy::FONT_DWARVENTODCRAFT12, aColor, DrawStringJustification::DS_ALIGN_CENTER);
+ 	}
+ 	else if (ProgressMeterHasFlags())
+@@ -6646,7 +6646,7 @@ void Board::DrawLevel(Graphics* g)
+ 			{
+ 				std::string aFlagStr = mApp->Pluralize(aFlags, "[ONE_FLAG]", "[COUNT_FLAGS]");
+ 				std::string aCompletedStr = PvzpReplaceString("[FLAGS_COMPLETED]", "{FLAGS}", aFlagStr);
+-				aLevelStr = std::format("{} - {}", PvzpStringTranslate(aLevelStr), aCompletedStr);
++				aLevelStr = fmt::format("{} - {}", PvzpStringTranslate(aLevelStr), aCompletedStr);
+ 			}
+ 		}
+ 		else if (mApp->IsEndlessIZombie(mApp->mGameMode) || mApp->IsEndlessScaryPotter(mApp->mGameMode))
+@@ -6659,7 +6659,7 @@ void Board::DrawLevel(Graphics* g)
+ 			if (aStreak > 0)
+ 			{
+ 				std::string aStreakStr = PvzpReplaceNumberString("[ENDLESS_STREAK]", "{STREAK}", aStreak);
+-				aLevelStr = std::format("{} - {}", PvzpStringTranslate(aLevelStr), aStreakStr);
++				aLevelStr = fmt::format("{} - {}", PvzpStringTranslate(aLevelStr), aStreakStr);
+ 			}
+ 		}
+ 	}
+@@ -6772,7 +6772,7 @@ void Board::DrawZenButtons(Graphics* g)
+ 				g->DrawImage(Sexy::IMAGE_FERTILIZER, aButtonRect.mX - 6, aButtonRect.mY + aOffsetY - 7);
+ 				g->SetColorizeImages(false);
+ 
+-				std::string aChargeString = std::format("x{}", aCharges);
++				std::string aChargeString = fmt::format("x{}", aCharges);
+ 				PvzpDrawString(g, aChargeString, aButtonRect.mX + 64, aButtonRect.mY + aOffsetY + 65, Sexy::FONT_HOUSEOFTERROR16, Color::White, DS_ALIGN_RIGHT);
+ 				break;
+ 			}
+@@ -6788,7 +6788,7 @@ void Board::DrawZenButtons(Graphics* g)
+ 				g->DrawImage(Sexy::IMAGE_BUG_SPRAY, aButtonRect.mX, aButtonRect.mY + aOffsetY - 1);
+ 				g->SetColorizeImages(false);
+ 
+-				std::string aChargeString = std::format("x{}", aCharges);
++				std::string aChargeString = fmt::format("x{}", aCharges);
+ 				PvzpDrawString(g, aChargeString, aButtonRect.mX + 64, aButtonRect.mY + aOffsetY + 65, Sexy::FONT_HOUSEOFTERROR16, Color::White, DS_ALIGN_RIGHT);
+ 				break;
+ 			}
+@@ -6807,7 +6807,7 @@ void Board::DrawZenButtons(Graphics* g)
+ 				g->DrawImage(Sexy::IMAGE_CHOCOLATE, aButtonRect.mX + 6, aButtonRect.mY + aOffsetY + 4);
+ 				g->SetColorizeImages(false);
+ 
+-				std::string aChargeString = std::format("x{}", aCharges);
++				std::string aChargeString = fmt::format("x{}", aCharges);
+ 				PvzpDrawString(g, aChargeString, aButtonRect.mX + 64, aButtonRect.mY + aOffsetY + 65, Sexy::FONT_HOUSEOFTERROR16, Color::White, DS_ALIGN_RIGHT);
+ 				break;
+ 			}
+@@ -6841,7 +6841,7 @@ void Board::DrawZenButtons(Graphics* g)
+ 				g->DrawImage(Sexy::IMAGE_TREEFOOD, aButtonRect.mX - 6, aButtonRect.mY + aOffsetY - 7);
+ 				g->SetColorizeImages(false);
+ 
+-				std::string aChargeString = std::format("x{}", aCharges);
++				std::string aChargeString = fmt::format("x{}", aCharges);
+ 				PvzpDrawString(g, aChargeString, aButtonRect.mX + 64, aButtonRect.mY + aOffsetY + 65, Sexy::FONT_HOUSEOFTERROR16, Color::White, DS_ALIGN_RIGHT);
+ 				break;
+ 			}
+@@ -6894,36 +6894,36 @@ void Board::DrawDebugText(Graphics* g)
+ 		int aTime = mZombieCountDownStart - mZombieCountDown;
+ 		float aCountDownFraction = static_cast<float>(aTime) / static_cast<float>(mZombieCountDownStart);
+ 
+-		aText += std::format("ZOMBIE SPAWNING DEBUG\n");
+-		aText += std::format("CurrentWave: {} of {}\n", mCurrentWave, mNumWaves);
+-		aText += std::format("TimeSinseLastSpawn: {} {}\n", aTime, aTime > 400 ? "" : "(too soon)");
+-		aText += std::format("ZombieCountDown: {}/{} ({:.0f}%)\n", mZombieCountDown, mZombieCountDownStart, aCountDownFraction);
++		aText += fmt::format("ZOMBIE SPAWNING DEBUG\n");
++		aText += fmt::format("CurrentWave: {} of {}\n", mCurrentWave, mNumWaves);
++		aText += fmt::format("TimeSinseLastSpawn: {} {}\n", aTime, aTime > 400 ? "" : "(too soon)");
++		aText += fmt::format("ZombieCountDown: {}/{} ({:.0f}%)\n", mZombieCountDown, mZombieCountDownStart, aCountDownFraction);
+ 
+ 		if (mZombieHealthToNextWave != -1)
+ 		{
+ 			int aTotalHealth = TotalZombiesHealthInWave(mCurrentWave - 1);
+ 			int aHealthRange = std::max(mZombieHealthWaveStart - mZombieHealthToNextWave, 1);
+ 			float aHealthFraction = static_cast<float>(mZombieHealthToNextWave - aTotalHealth + aHealthRange) / static_cast<float>(aHealthRange);
+-			aText += std::format("ZombieHealth: CurZombieHealth {} trigger {} ({:.0f}%)\n", aTotalHealth, mZombieHealthToNextWave, aHealthFraction * 100);
++			aText += fmt::format("ZombieHealth: CurZombieHealth {} trigger {} ({:.0f}%)\n", aTotalHealth, mZombieHealthToNextWave, aHealthFraction * 100);
+ 		}
+ 		else
+ 		{
+-			aText += std::format("ZombieHealth: before first wave\n");
++			aText += fmt::format("ZombieHealth: before first wave\n");
+ 		}
+ 
+ 		if (mHugeWaveCountDown > 0)
+ 		{
+-			aText += std::format("HugeWaveCountDown: {}\n", mHugeWaveCountDown);
++			aText += fmt::format("HugeWaveCountDown: {}\n", mHugeWaveCountDown);
+ 		}
+ 
+ 		Zombie* aBossZombie = GetBossZombie();
+ 		if (aBossZombie)
+ 		{
+-			aText += std::format("\nSpawn: {}\n", aBossZombie->mSummonCounter);
+-			aText += std::format("Stomp: {}\n", aBossZombie->mBossStompCounter);
+-			aText += std::format("Bungee: {}\n", aBossZombie->mBossBungeeCounter);
+-			aText += std::format("Head: {}\n", aBossZombie->mBossHeadCounter);
+-			aText += std::format("Health: {} of {}\n", aBossZombie->mBodyHealth, aBossZombie->mBodyMaxHealth);
++			aText += fmt::format("\nSpawn: {}\n", aBossZombie->mSummonCounter);
++			aText += fmt::format("Stomp: {}\n", aBossZombie->mBossStompCounter);
++			aText += fmt::format("Bungee: {}\n", aBossZombie->mBossBungeeCounter);
++			aText += fmt::format("Head: {}\n", aBossZombie->mBossHeadCounter);
++			aText += fmt::format("Health: {} of {}\n", aBossZombie->mBodyHealth, aBossZombie->mBodyMaxHealth);
+ 		}
+ 
+ 		break;
+@@ -6931,78 +6931,78 @@ void Board::DrawDebugText(Graphics* g)
+ 
+ 	case DebugTextMode::DEBUG_TEXT_MUSIC:
+ 	{
+-		aText += std::format("MUSIC DEBUG\n");
+-		aText += std::format("CurrentWave: {} of {}\n", mCurrentWave, mNumWaves);
++		aText += fmt::format("MUSIC DEBUG\n");
++		aText += fmt::format("CurrentWave: {} of {}\n", mCurrentWave, mNumWaves);
+ 
+ 		if (mApp->mMusic->mCurMusicFileMain == MusicFile::MUSIC_FILE_NONE)
+ 		{
+-			aText += std::format("No music");
++			aText += fmt::format("No music");
+ 		}
+ 		else
+ 		{
+-			aText += std::format("Music Burst: ");
++			aText += fmt::format("Music Burst: ");
+ 
+ 			if (mApp->mMusic->mMusicBurstState == MusicBurstState::MUSIC_BURST_OFF)
+ 			{
+-				aText += std::format("Off");
++				aText += fmt::format("Off");
+ 			}
+ 			else if (mApp->mMusic->mMusicBurstState == MusicBurstState::MUSIC_BURST_STARTING)
+ 			{
+-				aText += std::format("Starting {}/{}", mApp->mMusic->mBurstStateCounter, 400);
++				aText += fmt::format("Starting {}/{}", mApp->mMusic->mBurstStateCounter, 400);
+ 			}
+ 			else if (mApp->mMusic->mMusicBurstState == MusicBurstState::MUSIC_BURST_ON)
+ 			{
+-				aText += std::format("On at least until {}/{}", mApp->mMusic->mBurstStateCounter, 800);
++				aText += fmt::format("On at least until {}/{}", mApp->mMusic->mBurstStateCounter, 800);
+ 			}
+ 			else if (mApp->mMusic->mMusicBurstState == MusicBurstState::MUSIC_BURST_FINISHING)
+ 			{
+-				aText += std::format("Finishing {}/{}", mApp->mMusic->mBurstStateCounter, 400);
++				aText += fmt::format("Finishing {}/{}", mApp->mMusic->mBurstStateCounter, 400);
+ 			}
+ 
+ 			if (mApp->mMusic->mMusicDrumsState == MusicDrumsState::MUSIC_DRUMS_OFF)
+ 			{
+-				aText += std::format(", Drums off");
++				aText += fmt::format(", Drums off");
+ 			}
+ 			else if (mApp->mMusic->mMusicDrumsState == MusicDrumsState::MUSIC_DRUMS_ON_QUEUED)
+ 			{
+-				aText += std::format(", Drums queued on");
++				aText += fmt::format(", Drums queued on");
+ 			}
+ 			else if (mApp->mMusic->mMusicDrumsState == MusicDrumsState::MUSIC_DRUMS_ON)
+ 			{
+-				aText += std::format(", Drums on");
++				aText += fmt::format(", Drums on");
+ 			}
+ 			else if (mApp->mMusic->mMusicDrumsState == MusicDrumsState::MUSIC_DRUMS_OFF_QUEUED)
+ 			{
+-				aText += std::format(", Drums queued off");
++				aText += fmt::format(", Drums queued off");
+ 			}
+ 			else if (mApp->mMusic->mMusicDrumsState == MusicDrumsState::MUSIC_DRUMS_FADING)
+ 			{
+-				aText += std::format(", Drums fading off {}/{}", mApp->mMusic->mDrumsStateCounter, 50);
++				aText += fmt::format(", Drums fading off {}/{}", mApp->mMusic->mDrumsStateCounter, 50);
+ 			}
+-			aText += std::format("\n");
++			aText += fmt::format("\n");
+ 		}
+ 
+ 		break;
+ 	}
+ 
+ 	case DebugTextMode::DEBUG_TEXT_MEMORY:
+-		aText += std::format("MEMORY DEBUG\n");
+-		aText += std::format("attachments {}\n", mApp->mEffectSystem->mAttachmentHolder->mAttachments.mSize);
+-		aText += std::format("emitters {}\n", mApp->mEffectSystem->mParticleHolder->mEmitters.mSize);
+-		aText += std::format("particles {}\n", mApp->mEffectSystem->mParticleHolder->mParticles.mSize);
+-		aText += std::format("particle systems {}\n", mApp->mEffectSystem->mParticleHolder->mParticleSystems.mSize);
+-		aText += std::format("trails {}\n", mApp->mEffectSystem->mTrailHolder->mTrails.mSize);
+-		aText += std::format("reanimation {}\n", mApp->mEffectSystem->mReanimationHolder->mReanimations.mSize);
+-		aText += std::format("zombies {}\n", mZombies.mSize);
+-		aText += std::format("plants {}\n", mPlants.mSize);
+-		aText += std::format("projectiles {}\n", mProjectiles.mSize);
+-		aText += std::format("coins {}\n", mCoins.mSize);
+-		aText += std::format("lawn mowers {}\n", mLawnMowers.mSize);
+-		aText += std::format("grid items {}\n", mGridItems.mSize);
++		aText += fmt::format("MEMORY DEBUG\n");
++		aText += fmt::format("attachments {}\n", mApp->mEffectSystem->mAttachmentHolder->mAttachments.mSize);
++		aText += fmt::format("emitters {}\n", mApp->mEffectSystem->mParticleHolder->mEmitters.mSize);
++		aText += fmt::format("particles {}\n", mApp->mEffectSystem->mParticleHolder->mParticles.mSize);
++		aText += fmt::format("particle systems {}\n", mApp->mEffectSystem->mParticleHolder->mParticleSystems.mSize);
++		aText += fmt::format("trails {}\n", mApp->mEffectSystem->mTrailHolder->mTrails.mSize);
++		aText += fmt::format("reanimation {}\n", mApp->mEffectSystem->mReanimationHolder->mReanimations.mSize);
++		aText += fmt::format("zombies {}\n", mZombies.mSize);
++		aText += fmt::format("plants {}\n", mPlants.mSize);
++		aText += fmt::format("projectiles {}\n", mProjectiles.mSize);
++		aText += fmt::format("coins {}\n", mCoins.mSize);
++		aText += fmt::format("lawn mowers {}\n", mLawnMowers.mSize);
++		aText += fmt::format("grid items {}\n", mGridItems.mSize);
+ 		break;
+ 
+ 	case DebugTextMode::DEBUG_TEXT_COLLISION:
+-		aText += std::format("COLLISION DEBUG\n");
++		aText += fmt::format("COLLISION DEBUG\n");
+ 		break;
+ 
+ 	default:
+diff --git a/src/Lawn/Challenge.cpp b/src/Lawn/Challenge.cpp
+index f527937..37ce775 100644
+--- a/src/Lawn/Challenge.cpp
++++ b/src/Lawn/Challenge.cpp
+@@ -54,7 +54,6 @@
+ #include "widget/WidgetManager.h"
+ #include "Widget/AchievementsScreen.h"
+ #include <algorithm>
+-#include <format>
+ 
+ constexpr const int BEGHOULED_WINNING_SCORE = 75;
+ constexpr const int SLOT_MACHINE_WINNING_SCORE = 2000;
+@@ -5245,7 +5244,7 @@ void Challenge::TreeOfWisdomDraw(Graphics* g)
+ 		}
+ 
+ 		g->DrawImage(Sexy::IMAGE_STORE_SPEECHBUBBLE2, aPosX, aPosY);
+-		std::string aText = std::format("[TREE_OF_WISDOM_{}]", mTreeOfWisdomTalkIndex);
++		std::string aText = fmt::format("[TREE_OF_WISDOM_{}]", mTreeOfWisdomTalkIndex);
+ 		auto aWrapEnum = static_cast<DrawStringJustification>(mApp->GetInteger("TREE_OF_WISDOM_TEXT_WRAP_ENUM", DS_ALIGN_CENTER_VERTICAL_MIDDLE));
+ 		PvzpDrawStringWrapped(g, aText, Rect(aPosX + 25, aPosY + 6, 233, 144), Sexy::FONT_BRIANNETOD16, Color::Black, aWrapEnum);
+ 	}
+@@ -5287,7 +5286,7 @@ void Challenge::TreeOfWisdomInit()
+ 	mReanimChallenge = mApp->ReanimationGetID(aReanimTree);
+ 
+ 	int aTreeSize = std::clamp(TreeOfWisdomGetSize(), 1, 50);
+-	aReanimTree->PlayReanim(std::format("anim_grow{}", aTreeSize).c_str(), REANIM_PLAY_ONCE_AND_HOLD, 0, 18.0f);
++	aReanimTree->PlayReanim(fmt::format("anim_grow{}", aTreeSize).c_str(), REANIM_PLAY_ONCE_AND_HOLD, 0, 18.0f);
+ 	if (aTreeSize == 0 && mApp->mPlayerInfo->mPurchases[STORE_ITEM_TREE_FOOD] < PURCHASE_COUNT_OFFSET)
+ 	{
+ 		aReanimTree->mFrameCount += aReanimTree->mFrameStart;
+@@ -5301,7 +5300,7 @@ void Challenge::TreeOfWisdomInit()
+ 	for (int i = 0; i < 6; i++)
+ 	{
+ 		Reanimation* aReanimCloud = mApp->AddReanimation(0, 0, 0, REANIM_TREEOFWISDOM_CLOUDS);
+-		aReanimCloud->PlayReanim(std::format("Cloud{}", i + 1).c_str(), REANIM_PLAY_ONCE_AND_HOLD, 0, 0);
++		aReanimCloud->PlayReanim(fmt::format("Cloud{}", i + 1).c_str(), REANIM_PLAY_ONCE_AND_HOLD, 0, 0);
+ 		mReanimClouds[i] = mApp->ReanimationGetID(aReanimCloud);
+ 
+ 		int aCloudCounter = RandRangeInt(-6000, 2000);
+@@ -5326,7 +5325,7 @@ void Challenge::TreeOfWisdomGrow()
+ {
+ 	mApp->mPlayerInfo->mChallengeRecords[mApp->GetCurrentChallengeIndex()]++;
+ 	int aTreeSize = TreeOfWisdomGetSize();
+-	mApp->ReanimationGet(mReanimChallenge)->PlayReanim(std::format("anim_grow{}", std::clamp(aTreeSize, 1, 51)).c_str(), REANIM_PLAY_ONCE_AND_HOLD, 0, 8.0f);
++	mApp->ReanimationGet(mReanimChallenge)->PlayReanim(fmt::format("anim_grow{}", std::clamp(aTreeSize, 1, 51)).c_str(), REANIM_PLAY_ONCE_AND_HOLD, 0, 8.0f);
+ 	mApp->PlayFoley(FOLEY_PLANTGROW);
+ 
+ 	if (aTreeSize > 1)
+diff --git a/src/Lawn/CutScene.cpp b/src/Lawn/CutScene.cpp
+index a5d2d91..37f88c4 100644
+--- a/src/Lawn/CutScene.cpp
++++ b/src/Lawn/CutScene.cpp
+@@ -48,7 +48,6 @@
+ #include "misc/PerfTimer.h"
+ #include "widget/WidgetManager.h"
+ #include <algorithm>
+-#include <format>
+ 
+ static const int	TimePanRightStart				= 1500;
+ static const int	TimePanRightEnd					= 3500;
+@@ -2142,8 +2141,8 @@ void CutScene::UpdateUpsell()
+ 			Reanimation* aReanimHead = mApp->AddReanimation(0, 0, 0, ReanimationType::REANIM_THREEPEATER);
+ 			aReanimHead->mLoopType = ReanimLoopType::REANIM_LOOP;
+ 			aReanimHead->mAnimRate = aReanimThreepeater->mAnimRate;
+-			aReanimHead->SetFramesForLayer(std::format("anim_head_idle{}", i).c_str());
+-			aReanimHead->AttachToAnotherReanimation(aReanimThreepeater, std::format("anim_head{}", i).c_str());
++			aReanimHead->SetFramesForLayer(fmt::format("anim_head_idle{}", i).c_str());
++			aReanimHead->AttachToAnotherReanimation(aReanimThreepeater, fmt::format("anim_head{}", i).c_str());
+ 		}
+ 		AttachEffect* anAttachEffect = AttachReanim(aCrazyDaveReanim->GetTrackInstanceByName("Dave_body1")->mAttachmentID, aReanimThreepeater, 0.0f, 0.0f);
+ 		PvzpScaleRotateTransformMatrix(anAttachEffect->mOffset, -70.0f, 260.0f, 0.5f, 1.2f, 1.2f);
+diff --git a/src/Lawn/LawnCommon.cpp b/src/Lawn/LawnCommon.cpp
+index a4fdb80..b2be3b7 100644
+--- a/src/Lawn/LawnCommon.cpp
++++ b/src/Lawn/LawnCommon.cpp
+@@ -20,7 +20,6 @@
+  */
+ 
+ #include <time.h>
+-#include <format>
+ #include "Board.h"
+ #include "Plant.h"
+ #include "../LawnApp.h"
+@@ -164,12 +163,12 @@ std::unique_ptr<Checkbox> MakeNewCheckbox(int theId, CheckboxListener* theListen
+ 
+ std::string GetSavedGameName(GameMode theGameMode, int theProfileId)
+ {
+-	return GetAppDataPath(std::format("userdata/game{}_{}.v4", theProfileId, static_cast<int>(theGameMode)));
++	return GetAppDataPath(fmt::format("userdata/game{}_{}.v4", theProfileId, static_cast<int>(theGameMode)));
+ }
+ 
+ std::string GetLegacySavedGameName(GameMode theGameMode, int theProfileId)
+ {
+-	return GetAppDataPath(std::format("userdata/game{}_{}.dat", theProfileId, static_cast<int>(theGameMode)));
++	return GetAppDataPath(fmt::format("userdata/game{}_{}.dat", theProfileId, static_cast<int>(theGameMode)));
+ }
+ 
+ int GetCurrentDaysSince2000(time_t theTime)
+diff --git a/src/Lawn/Plant.cpp b/src/Lawn/Plant.cpp
+index c934659..5db1c75 100644
+--- a/src/Lawn/Plant.cpp
++++ b/src/Lawn/Plant.cpp
+@@ -43,7 +43,6 @@
+ #include "../PvzpLib/PvzpStringFile.h"
+ #include "Widget/AchievementsScreen.h"
+ #include <algorithm>
+-#include <format>
+ 
+ constinit const PlantDefinition gPlantDefs[SeedType::NUM_SEED_TYPES] = {
+ 	{ .mSeedType = SeedType::SEED_PEASHOOTER,        .mPlantImage = nullptr, .mReanimationType = ReanimationType::REANIM_PEASHOOTER,    .mPacketIndex = 0,  .mSeedCost = 100, .mRefreshTime = 750,    .mSubClass = PlantSubClass::SUBCLASS_SHOOTER, .mLaunchRate = 150,  .mPlantName = "PEASHOOTER" },
+@@ -5037,15 +5036,15 @@ int Plant::GetCost(SeedType theSeedType, SeedType theImitaterType)
+ std::string Plant::GetNameString(SeedType theSeedType, SeedType theImitaterType)
+ {
+ 	const PlantDefinition& aPlantDef = GetPlantDefinition(theSeedType);
+-	std::string aName = std::format("[{}]", aPlantDef.mPlantName);
++	std::string aName = fmt::format("[{}]", aPlantDef.mPlantName);
+ 	std::string aTranslatedName(PvzpStringTranslate(aName));
+ 
+ 	if (theSeedType == SeedType::SEED_IMITATER && theImitaterType != SeedType::SEED_NONE)
+ 	{
+ 		const PlantDefinition& aImitaterDef = GetPlantDefinition(theImitaterType);
+-		std::string aImitaterName = std::format("[{}]", aImitaterDef.mPlantName);
++		std::string aImitaterName = fmt::format("[{}]", aImitaterDef.mPlantName);
+ 		std::string aTranslatedImitaterName(PvzpStringTranslate(aImitaterName));
+-		return std::format("{} {}", aTranslatedName, aTranslatedImitaterName);
++		return fmt::format("{} {}", aTranslatedName, aTranslatedImitaterName);
+ 	}
+ 
+ 	return aTranslatedName;
+@@ -5054,7 +5053,7 @@ std::string Plant::GetNameString(SeedType theSeedType, SeedType theImitaterType)
+ std::string Plant::GetToolTip(SeedType theSeedType)
+ {
+ 	const PlantDefinition& aPlantDef = GetPlantDefinition(theSeedType);
+-	std::string aToolTip = std::format("[{}_TOOLTIP]", aPlantDef.mPlantName);
++	std::string aToolTip = fmt::format("[{}_TOOLTIP]", aPlantDef.mPlantName);
+ 	return std::string(PvzpStringTranslate(aToolTip));
+ }
+ 
+diff --git a/src/Lawn/SeedPacket.cpp b/src/Lawn/SeedPacket.cpp
+index 4513ff1..d370d56 100644
+--- a/src/Lawn/SeedPacket.cpp
++++ b/src/Lawn/SeedPacket.cpp
+@@ -19,7 +19,6 @@
+  * along with PvZ-Portable. If not, see <https://www.gnu.org/licenses/>.
+  */
+ 
+-#include <format>
+ #include "Board.h"
+ #include "Cutscene.h"
+ #include "Challenge.h"
+@@ -572,7 +571,7 @@ void DrawSeedPacket(Graphics* g, float x, float y, SeedType theSeedType, SeedTyp
+ 			}
+ 			else
+ 			{
+-				aCostStr = std::format("{}+", Plant::GetCost(theSeedType, theImitaterType));
++				aCostStr = fmt::format("{}+", Plant::GetCost(theSeedType, theImitaterType));
+ 			}
+ 		}
+ 		else
+diff --git a/src/Lawn/System/PlayerInfo.cpp b/src/Lawn/System/PlayerInfo.cpp
+index 4f5e541..209cec0 100644
+--- a/src/Lawn/System/PlayerInfo.cpp
++++ b/src/Lawn/System/PlayerInfo.cpp
+@@ -20,7 +20,6 @@
+  */
+ 
+ #include <bit>
+-#include <format>
+ 
+ #include "DataSync.h"
+ #include <algorithm>
+@@ -217,7 +216,7 @@ void PlayerInfo::LoadDetails()
+ 	try
+ 	{
+ 		Buffer aBuffer;
+-		std::string aFileName = GetAppDataPath(std::format("userdata/user{}.dat", mId));
++		std::string aFileName = GetAppDataPath(fmt::format("userdata/user{}.dat", mId));
+ 		if (!gSexyAppBase->ReadBufferFromFile(aFileName, &aBuffer, false))
+ 		{
+ 			return;
+@@ -243,13 +242,13 @@ void PlayerInfo::SaveDetails()
+ 	SyncDetails(aSync);
+ 
+ 	MkDir(GetAppDataPath("userdata"));
+-	std::string aFileName = GetAppDataPath(std::format("userdata/user{}.dat", mId));
++	std::string aFileName = GetAppDataPath(fmt::format("userdata/user{}.dat", mId));
+ 	gSexyAppBase->WriteBytesToFile(aFileName, aWriter.GetDataPtr(), aWriter.GetDataLen());
+ }
+ 
+ void PlayerInfo::DeleteUserFiles()
+ {
+-	std::string aFilename = GetAppDataPath(std::format("userdata/user{}.dat", mId));
++	std::string aFilename = GetAppDataPath(fmt::format("userdata/user{}.dat", mId));
+ 	gSexyAppBase->EraseFile(aFilename);
+ 
+ 	for (int i = 0; i < static_cast<int>(GameMode::NUM_GAME_MODES); i++)
+diff --git a/src/Lawn/Widget/AlmanacDialog.cpp b/src/Lawn/Widget/AlmanacDialog.cpp
+index 8fb1d2a..44728c7 100644
+--- a/src/Lawn/Widget/AlmanacDialog.cpp
++++ b/src/Lawn/Widget/AlmanacDialog.cpp
+@@ -19,7 +19,8 @@
+  * along with PvZ-Portable. If not, see <https://www.gnu.org/licenses/>.
+  */
+ 
+-#include <format>
++#include <fmt/format.h>
++
+ #include "../Board.h"
+ #include "../Plant.h"
+ #include "../Zombie.h"
+@@ -334,13 +335,13 @@ void AlmanacDialog::DrawPlants(Graphics* g)
+ 	g->DrawImage(Sexy::IMAGE_ALMANAC_PLANTCARD, 459, 86);
+ 	const PlantDefinition& aPlantDef = GetPlantDefinition(mSelectedSeed);
+ 	std::string aName = Plant::GetNameString(mSelectedSeed, SEED_NONE);
+-	std::string aDescriptionName = std::format("[{}_DESCRIPTION]", aPlantDef.mPlantName);
++	std::string aDescriptionName = fmt::format("[{}_DESCRIPTION]", aPlantDef.mPlantName);
+ 	PvzpDrawString(g, aName, 617, 288, Sexy::FONT_DWARVENTODCRAFT18YELLOW, Color::White, DS_ALIGN_CENTER);
+ 	PvzpDrawStringWrapped(g, aDescriptionName, Rect(485, 309, 258, 230), Sexy::FONT_BRIANNETOD12, Color(40, 50, 90), DS_ALIGN_LEFT);
+ 
+ 	if (mSelectedSeed != SeedType::SEED_IMITATER)
+ 	{
+-		std::string aCostStr = PvzpReplaceString(std::format("{{KEYWORD}}{{COST}}:{{STAT}} {}", aPlantDef.mSeedCost), "{COST}", "[COST]");
++		std::string aCostStr = PvzpReplaceString(fmt::format("{{KEYWORD}}{{COST}}:{{STAT}} {}", aPlantDef.mSeedCost), "{COST}", "[COST]");
+ 		PvzpDrawStringWrapped(g, aCostStr, Rect(485, 520, 134, 50), Sexy::FONT_BRIANNETOD12, Color::White, DS_ALIGN_LEFT);
+ 
+ 		std::string aRechargeStr = PvzpReplaceString(
+@@ -459,14 +460,14 @@ void AlmanacDialog::DrawZombies(Graphics* g)
+ 	g->DrawImage(Sexy::IMAGE_ALMANAC_ZOMBIECARD, 455, 78);
+ 
+ 	const ZombieDefinition& aZombieDef = GetZombieDefinition(mSelectedZombie);
+-	std::string aName = ZombieHasSilhouette(mSelectedZombie) ? "???" : std::format("[{}]", aZombieDef.mZombieName);
++	std::string aName = ZombieHasSilhouette(mSelectedZombie) ? "???" : fmt::format("[{}]", aZombieDef.mZombieName);
+ 	PvzpDrawString(g, aName, 613, 362, Sexy::FONT_DWARVENTODCRAFT18GREENINSET, Color(190, 255, 235, 255), DS_ALIGN_CENTER);
+ 
+ 	std::string aDescription;
+ 	DrawStringJustification aAlign;
+ 	if (ZombieHasDescription(mSelectedZombie))
+ 	{
+-		aDescription = PvzpStringTranslate(std::format("[{}_DESCRIPTION]", aZombieDef.mZombieName));
++		aDescription = PvzpStringTranslate(fmt::format("[{}_DESCRIPTION]", aZombieDef.mZombieName));
+ 		aAlign = DS_ALIGN_LEFT;
+ 	}
+ 	else
+diff --git a/src/Lawn/Widget/ChallengeScreen.cpp b/src/Lawn/Widget/ChallengeScreen.cpp
+index f473d1e..cf3f696 100644
+--- a/src/Lawn/Widget/ChallengeScreen.cpp
++++ b/src/Lawn/Widget/ChallengeScreen.cpp
+@@ -34,7 +34,6 @@
+ #include "widget/WidgetManager.h"
+ #include <SDL.h>
+ #include <algorithm>
+-#include <format>
+ 
+ constinit const ChallengeDefinition gChallengeDefs[NUM_CHALLENGE_MODES] = {
+ 	{ .mChallengeMode = GameMode::GAMEMODE_SURVIVAL_NORMAL_STAGE_1, .mChallengeIconIndex = 0, .mPage = ChallengePage::CHALLENGE_PAGE_SURVIVAL, .mRow = 0, .mCol = 0, .mChallengeName = "[SURVIVAL_DAY_NORMAL]" },
+@@ -579,7 +578,7 @@ void ChallengeScreen::Draw(Graphics* g)
+ 	int aTrophiesTotal = mPageIndex == CHALLENGE_PAGE_SURVIVAL ? 10 : mPageIndex == CHALLENGE_PAGE_CHALLENGE ? 20 : mPageIndex == CHALLENGE_PAGE_PUZZLE ? 18 : 0;
+ 	if (aTrophiesTotal > 0)
+ 	{
+-		std::string aTrophyString = std::format("{}/{}", aTrophiesGot, aTrophiesTotal);
++		std::string aTrophyString = fmt::format("{}/{}", aTrophiesGot, aTrophiesTotal);
+ 		PvzpDrawString(g, aTrophyString, 739, 73, Sexy::FONT_DWARVENTODCRAFT15, Color(255, 240, 0), DS_ALIGN_CENTER);
+ 	}
+ 	PvzpDrawImageScaledF(g, Sexy::IMAGE_TROPHY, 718, 26, 0.5f, 0.5f);
+diff --git a/src/Lawn/Widget/CheatDialog.cpp b/src/Lawn/Widget/CheatDialog.cpp
+index b1e527d..4289a17 100644
+--- a/src/Lawn/Widget/CheatDialog.cpp
++++ b/src/Lawn/Widget/CheatDialog.cpp
+@@ -28,7 +28,6 @@
+ #include "../System/PlayerInfo.h"
+ #include "widget/WidgetManager.h"
+ #include <algorithm>
+-#include <format>
+ 
+ CheatDialog::CheatDialog(LawnApp* theApp) : LawnDialog(theApp, Dialogs::DIALOG_CHEAT, true, "CHEAT", "Enter New Level:", "", Dialog::BUTTONS_OK_CANCEL)
+ {
+@@ -41,11 +40,11 @@ CheatDialog::CheatDialog(LawnApp* theApp) : LawnDialog(theApp, Dialogs::DIALOG_C
+ 	std::string aCheatStr;
+ 	if (mApp->mGameMode != GameMode::GAMEMODE_ADVENTURE)
+ 	{
+-		aCheatStr = std::format("C{}", static_cast<int>(mApp->mGameMode));
++		aCheatStr = fmt::format("C{}", static_cast<int>(mApp->mGameMode));
+ 	}
+ 	else if (mApp->HasFinishedAdventure())
+ 	{
+-		aCheatStr = std::format("F{}", mApp->GetStageString(mApp->mPlayerInfo->GetLevel()));
++		aCheatStr = fmt::format("F{}", mApp->GetStageString(mApp->mPlayerInfo->GetLevel()));
+ 	}
+ 	else
+ 	{
+diff --git a/src/Lawn/Widget/CreditScreen.cpp b/src/Lawn/Widget/CreditScreen.cpp
+index c12d0ad..ee06082 100644
+--- a/src/Lawn/Widget/CreditScreen.cpp
++++ b/src/Lawn/Widget/CreditScreen.cpp
+@@ -35,7 +35,6 @@
+ #include "../../PvzpLib/PvzpStringFile.h"
+ #include "graphics/Font.h"
+ #include <optional>
+-#include <format>
+ 
+ static constexpr float CREDIT_SCREEN_ANIM_RATE = 0.3f;
+ 
+@@ -751,7 +750,7 @@ static int DrawCreditsContent(Graphics* g, int theYPos, bool theDraw)
+ 
+ 	for (int aSection = 3; aSection <= 11; aSection++)
+ 	{
+-		std::string aRolesKey = std::format("[CREDITS_ROLES{}]", aSection);
++		std::string aRolesKey = fmt::format("[CREDITS_ROLES{}]", aSection);
+ 		std::optional<std::string_view> aRolesLookup = PvzpStringTryTranslate(aRolesKey);
+ 		if (!aRolesLookup)
+ 			continue;
+@@ -770,7 +769,7 @@ static int DrawCreditsContent(Graphics* g, int theYPos, bool theDraw)
+ 			continue;
+ 		}
+ 
+-		std::string aNamesKey = std::format("[CREDITS_NAMES{}]", aSection);
++		std::string aNamesKey = fmt::format("[CREDITS_NAMES{}]", aSection);
+ 		std::string_view aNames = PvzpStringTryTranslate(aNamesKey).value_or("");
+ 
+ 		// Split roles and names by newline, draw side by side
+diff --git a/src/Lawn/Widget/GameSelector.cpp b/src/Lawn/Widget/GameSelector.cpp
+index e30bd35..647ceea 100644
+--- a/src/Lawn/Widget/GameSelector.cpp
++++ b/src/Lawn/Widget/GameSelector.cpp
+@@ -44,7 +44,6 @@
+ #include "widget/Dialog.h"
+ #include "widget/WidgetManager.h"
+ #include <algorithm>
+-#include <format>
+ 
+ static float gFlowerCenter[3][2] = { { 765.0f, 483.0f }, { 663.0f, 455.0f }, { 701.0f, 439.0f } };
+ 
+@@ -305,7 +304,7 @@ GameSelector::GameSelector(LawnApp* theApp)
+ 	for (int i = 0; i < 6; i++)
+ 	{
+ 		Reanimation* aCloudReanim = mApp->AddReanimation(0.5f, 0.5f, 0, ReanimationType::REANIM_SELECTOR_SCREEN);
+-		std::string aAnimName = std::format("anim_cloud{}", (i > 1 ? i + 2 : i + 1));
++		std::string aAnimName = fmt::format("anim_cloud{}", (i > 1 ? i + 2 : i + 1));
+ 		aCloudReanim->PlayReanim(aAnimName.c_str(), ReanimLoopType::REANIM_PLAY_ONCE_AND_HOLD, 0, 0.0f);
+ 		mCloudReanimID[i] = mApp->ReanimationGetID(aCloudReanim);
+ 		mCloudCounter[i] = RandRangeInt(-6000, 2000);
+@@ -322,7 +321,7 @@ GameSelector::GameSelector(LawnApp* theApp)
+ 	for (int i = 0; i < 3; i++)
+ 	{
+ 		Reanimation* aFlowerReanim = mApp->AddReanimation(0.5f, 0.5f, 0, ReanimationType::REANIM_SELECTOR_SCREEN);
+-		std::string aAnimName = std::format("anim_flower{}", i + 1);
++		std::string aAnimName = fmt::format("anim_flower{}", i + 1);
+ 		aFlowerReanim->PlayReanim(aAnimName.c_str(), ReanimLoopType::REANIM_PLAY_ONCE_AND_HOLD, 0, 0.0f);
+ 		aFlowerReanim->mAnimRate = 0.0f;
+ 		aFlowerReanim->AttachToAnotherReanimation(aSelectorReanim, "SelectorScreen_BG_Right");
+diff --git a/src/Lawn/Widget/ZombatarWidget.cpp b/src/Lawn/Widget/ZombatarWidget.cpp
+index d3bbcf6..0fa4faa 100644
+--- a/src/Lawn/Widget/ZombatarWidget.cpp
++++ b/src/Lawn/Widget/ZombatarWidget.cpp
+@@ -38,7 +38,6 @@
+ 
+ #include <algorithm>
+ #include <cstring>
+-#include <format>
+ 
+ constexpr int ZOMBATAR_COLOR_NONE = -1;
+ constexpr int ZOMBATAR_SKIN_COLOR_COUNT = 12;
+@@ -1028,7 +1027,7 @@ void ZombatarWidget::DrawList(Graphics* g)
+ 
+ 	g->SetFont(FONT_BRIANNETOD12);
+ 	g->SetColor(Color(255, 255, 255));
+-	g->DrawString(std::format("{} / {}", mCurrentIndex + 1, aCount), ZOMBATAR_LIST_COUNTER_X, ZOMBATAR_LIST_COUNTER_Y);
++	g->DrawString(fmt::format("{} / {}", mCurrentIndex + 1, aCount), ZOMBATAR_LIST_COUNTER_X, ZOMBATAR_LIST_COUNTER_Y);
+ 
+ 	g->SetFont(FONT_DWARVENTODCRAFT12);
+ 	g->SetColor(mDeleteHover ? Color(22, 253, 5) : Color(255, 255, 255));
+diff --git a/src/Lawn/Zombie.cpp b/src/Lawn/Zombie.cpp
+index c140a3d..5203f3a 100644
+--- a/src/Lawn/Zombie.cpp
++++ b/src/Lawn/Zombie.cpp
+@@ -20,7 +20,6 @@
+  */
+ 
+ #include <climits>
+-#include <format>
+ 
+ #include "Plant.h"
+ #include "Board.h"
+@@ -74,7 +73,7 @@ constexpr Color ZOMBIE_MINDCONTROLLED_COLOR = Color(128, 64, 192, 255);
+ 
+ static std::string ZombatarTrackName(const char* thePrefix, int theIndex)
+ {
+-	return std::format("{}{:02d}", thePrefix, theIndex);
++	return fmt::format("{}{:02d}", thePrefix, theIndex);
+ }
+ 
+ constinit const ZombieDefinition gZombieDefs[NUM_ZOMBIE_TYPES] = {
+diff --git a/src/LawnApp.cpp b/src/LawnApp.cpp
+index d360a2f..a18bb92 100644
+--- a/src/LawnApp.cpp
++++ b/src/LawnApp.cpp
+@@ -22,7 +22,6 @@
+ #include <time.h>
+ #include <cstdarg>
+ #include <cstdio>
+-#include <format>
+ #include "LawnApp.h"
+ #include "Resources.h"
+ #include "Lawn/LawnCommon.h"
+@@ -1971,7 +1970,7 @@ std::string LawnApp::GetStageString(int theLevel)
+ {
+ 	int aArea = std::clamp((theLevel - 1) / LEVELS_PER_AREA + 1, 1, ADVENTURE_AREAS + 1);
+ 	int aSub = theLevel - (aArea - 1) * LEVELS_PER_AREA;
+-	return std::format("{}-{}", aArea, aSub);
++	return fmt::format("{}-{}", aArea, aSub);
+ }
+ 
+ bool LawnApp::IsAdventureMode()
+@@ -2360,7 +2359,7 @@ void LawnApp::RemoveParticle(ParticleSystemID theParticleID)
+ 
+ bool LawnApp::AdvanceCrazyDaveText()
+ {
+-	std::string aMessageName = std::format("[CRAZY_DAVE_{}]", mCrazyDaveMessageIndex + 1);
++	std::string aMessageName = fmt::format("[CRAZY_DAVE_{}]", mCrazyDaveMessageIndex + 1);
+ 	if (!PvzpStringListExists(aMessageName))
+ 	{
+ 		return false;
+@@ -2372,7 +2371,7 @@ bool LawnApp::AdvanceCrazyDaveText()
+ 
+ std::string LawnApp::GetCrazyDaveText(int theMessageIndex)
+ {
+-	std::string aMessage = std::format("[CRAZY_DAVE_{}]", theMessageIndex);
++	std::string aMessage = fmt::format("[CRAZY_DAVE_{}]", theMessageIndex);
+ 	aMessage = PvzpReplaceString(aMessage, "{PLAYER_NAME}", mPlayerInfo->mName);
+ 	aMessage = PvzpReplaceString(aMessage, "{MONEY}", GetMoneyString(mPlayerInfo->mCoins));
+ 	int aCost = StoreScreen::GetItemCost(StoreItem::STORE_ITEM_PACKET_UPGRADE);
+@@ -3129,15 +3128,15 @@ std::string LawnApp::GetMoneyString(int theAmount)
+ 	int aValue = theAmount * 10;
+ 	if (aValue > 999999)
+ 	{
+-		return std::format("${},{:03d},{:03d}", aValue / 1000000, (aValue - aValue / 1000000 * 1000000) / 1000, aValue - aValue / 1000 * 1000);
++		return fmt::format("${},{:03d},{:03d}", aValue / 1000000, (aValue - aValue / 1000000 * 1000000) / 1000, aValue - aValue / 1000 * 1000);
+ 	}
+ 	else if (aValue > 9999)
+ 	{
+-		return std::format("${},{:03d}", aValue / 1000, aValue - aValue / 1000 * 1000);
++		return fmt::format("${},{:03d}", aValue / 1000, aValue - aValue / 1000 * 1000);
+ 	}
+ 	else
+ 	{
+-		return std::format("${}", aValue);
++		return fmt::format("${}", aValue);
+ 	}
+ }
+ 
+@@ -3178,7 +3177,7 @@ std::string LawnGetCurrentLevelName()
+ 	}
+ 	if (gLawnApp->IsAdventureMode())
+ 	{
+-		return std::format("F{}", gLawnApp->GetStageString(gLawnApp->mBoard->mLevel));
++		return fmt::format("F{}", gLawnApp->GetStageString(gLawnApp->mBoard->mLevel));
+ 	}
+ 
+ 	return gLawnApp->GetCurrentChallengeDef().mChallengeName;
+diff --git a/src/PvzpLib/Definition.cpp b/src/PvzpLib/Definition.cpp
+index 14d8338..732581b 100644
+--- a/src/PvzpLib/Definition.cpp
++++ b/src/PvzpLib/Definition.cpp
+@@ -28,8 +28,8 @@
+ #include <sys/stat.h>
+ #include <filesystem>
+ #include <fstream>
++#include <sstream>
+ #include <memory>
+-#include <format>
+ #include "PvzpDebug.h"
+ #include "Definition.h"
+ #include "zlib.h"
+@@ -1062,7 +1062,7 @@ bool DefinitionReadImageField(XMLParser* theXmlParser, Image** theImage)
+ 	if (DefinitionLoadImage(theImage, aStringValue))
+ 		return true;
+ 
+-	std::string aMessage = std::format("Failed to find image '{}' in {}", aStringValue, theXmlParser->GetFileName());
++	std::string aMessage = fmt::format("Failed to find image '{}' in {}", aStringValue, theXmlParser->GetFileName());
+ 	PvzpErrorMessageBox(aMessage, "Missing image");
+ 
+ 	return false;
+@@ -1077,7 +1077,9 @@ bool DefinitionReadFontField(XMLParser* theXmlParser, _Font** theFont)
+ 	if (DefinitionLoadFont(theFont, aStringValue))
+ 		return true;
+ 
+-	std::string aMessage = std::format("Failed to find font '{}' in {}", aStringValue, theXmlParser->GetFileName());
++	std::stringstream ss;
++	ss << "Failed to find font '" << aStringValue << "' in " <<  theXmlParser->GetFileName();
++	std::string aMessage = ss.str();
+ 	PvzpErrorMessageBox(aMessage, "Missing font");
+ 
+ 	return false;
+@@ -1311,7 +1313,9 @@ bool DefinitionCompileAndLoad(const std::string& theXMLFilePath, const DefMap* t
+ 		return true;
+ 
+ #ifndef PVZ_DEBUG
+-	PvzpErrorMessageBox(std::format("missing resource {}", aCompiledFilePath), "Error");
++	std::stringstream ss;
++	ss << "missing resource " << aCompiledFilePath;
++	PvzpErrorMessageBox(ss.str(), "Error");
+ 	exit(0);
+ #endif
+ 	return false;
+diff --git a/src/PvzpLib/Definition.h b/src/PvzpLib/Definition.h
+index dc28727..ecaa82a 100644
+--- a/src/PvzpLib/Definition.h
++++ b/src/PvzpLib/Definition.h
+@@ -23,7 +23,7 @@
+ #define __PVZPDEFINITION_H__
+ 
+ #include <string>
+-#include <format>
++#include <fmt/format.h>
+ #include "PvzpCommon.h"
+ #include "PvzpList.h"
+ #include "PvzpDebug.h"
+@@ -136,9 +136,9 @@ bool                    DefinitionIsCompiled(const std::string& theXMLFilePath);
+ bool                    DefinitionReadCompiledFile(const std::string& theCompiledFilePath, const DefMap* theDefMap, void* theDefinition);
+ void                    DefinitionFillWithDefaults(const DefMap* theDefMap, void* theDefinition);
+ template<typename... Args>
+-void                    DefinitionXmlError(XMLParser* theXmlParser, std::format_string<Args...> theFormat, Args&&... theArgs)
++void                    DefinitionXmlError(XMLParser* theXmlParser, fmt::format_string<Args...> theFormat, Args&&... theArgs)
+ {
+-	std::string aFormattedMessage = std::vformat(theFormat.get(), std::make_format_args(theArgs...));
++	std::string aFormattedMessage = fmt::vformat(theFormat.get(), fmt::make_format_args(theArgs...));
+ 	int aLine = theXmlParser->GetCurrentLineNum();
+ 	std::string aFileName = theXmlParser->GetFileName();
+ 	PvzpLogLn("{}({}): XML Definition Error: {}", aFileName, aLine, aFormattedMessage);
+diff --git a/src/PvzpLib/PvzpDebug.cpp b/src/PvzpLib/PvzpDebug.cpp
+index d88616d..06a524e 100644
+--- a/src/PvzpLib/PvzpDebug.cpp
++++ b/src/PvzpLib/PvzpDebug.cpp
+@@ -20,7 +20,7 @@
+  */
+ 
+ #include <stdexcept>
+-#include <format>
++#include <fmt/format.h>
+ 
+ #ifdef __SWITCH__
+ #include <switch.h>
+@@ -72,9 +72,9 @@ void PvzpAssertReport(const char* theCondition, const char* theFile, int theLine
+ {
+ 	std::string aBuffer;
+ 	if (*theCondition != '\0')
+-		aBuffer = std::format("\n{}({})\nassertion failed: '{}'\n{}", theFile, theLine, theCondition, theMsg);
++		aBuffer = fmt::format("\n{}({})\nassertion failed: '{}'\n{}", theFile, theLine, theCondition, theMsg);
+ 	else
+-		aBuffer = std::format("\n{}({})\nassertion failed: {}", theFile, theLine, theMsg);
++		aBuffer = fmt::format("\n{}({})\nassertion failed: {}", theFile, theLine, theMsg);
+ 
+ 	Sexy::DispatchLogLn(Sexy::SexyLogPriority::Error, aBuffer);
+ 	PvzpErrorMessageBox(aBuffer, "Assertion failed");
+diff --git a/src/PvzpLib/PvzpDebug.h b/src/PvzpLib/PvzpDebug.h
+index 581dd17..821c1e3 100644
+--- a/src/PvzpLib/PvzpDebug.h
++++ b/src/PvzpLib/PvzpDebug.h
+@@ -22,7 +22,7 @@
+ #ifndef __PVZPDEBUG_H__
+ #define __PVZPDEBUG_H__
+ 
+-#include <format>
++#include <fmt/format.h>
+ 
+ #include "../SexyAppFramework/Common.h"
+ 
+@@ -52,13 +52,13 @@ void*				PvzpMalloc(int theSize);
+ void				PvzpFree(void* theBlock);
+ 
+ template<typename... Args>
+-void				PvzpLogLn(std::format_string<Args...> theFmt, Args&&... theArgs)
++void				PvzpLogLn(fmt::format_string<Args...> theFmt, Args&&... theArgs)
+ {
+-	Sexy::DispatchLogLn(Sexy::SexyLogPriority::Info, std::vformat(theFmt.get(), std::make_format_args(theArgs...)));
++	Sexy::DispatchLogLn(Sexy::SexyLogPriority::Info, fmt::vformat(theFmt.get(), fmt::make_format_args(theArgs...)));
+ }
+ 
+ template<typename... Args>
+-void				PvzpTraceWithoutSpamming(std::format_string<Args...> theFmt, Args&&... theArgs)
++void				PvzpTraceWithoutSpamming(fmt::format_string<Args...> theFmt, Args&&... theArgs)
+ {
+ 	static uint64_t gLastTraceTime = 0LL;
+ 	uint64_t aTime = std::time(nullptr);
+@@ -66,13 +66,13 @@ void				PvzpTraceWithoutSpamming(std::format_string<Args...> theFmt, Args&&... t
+ 		return;
+ 
+ 	gLastTraceTime = aTime;
+-	Sexy::DispatchLogLn(Sexy::SexyLogPriority::Info, std::vformat(theFmt.get(), std::make_format_args(theArgs...)));
++	Sexy::DispatchLogLn(Sexy::SexyLogPriority::Info, fmt::vformat(theFmt.get(), fmt::make_format_args(theArgs...)));
+ }
+ 
+ template<typename... Args>
+-void				PvzpAssertFailed(const char* theCondition, const char* theFile, int theLine, std::format_string<Args...> theMsg, Args&&... theArgs)
++void				PvzpAssertFailed(const char* theCondition, const char* theFile, int theLine, fmt::format_string<Args...> theMsg, Args&&... theArgs)
+ {
+-	PvzpAssertReport(theCondition, theFile, theLine, std::vformat(theMsg.get(), std::make_format_args(theArgs...)));
++	PvzpAssertReport(theCondition, theFile, theLine, fmt::vformat(theMsg.get(), fmt::make_format_args(theArgs...)));
+ }
+ 
+ #ifdef PVZ_DEBUG
+diff --git a/src/PvzpLib/PvzpParticle.cpp b/src/PvzpLib/PvzpParticle.cpp
+index cf9356b..d15ff75 100644
+--- a/src/PvzpLib/PvzpParticle.cpp
++++ b/src/PvzpLib/PvzpParticle.cpp
+@@ -27,7 +27,6 @@
+ #include "graphics/Graphics.h"
+ #include "graphics/GLInterface.h"
+ #include <algorithm>
+-#include <format>
+ 
+ int gParticleDefCount;
+ std::unique_ptr<PvzpParticleDefinition[]> gParticleDefArray;
+@@ -148,7 +147,7 @@ bool PvzpParticleLoadADef(PvzpParticleDefinition* theParticleDef, const char* th
+ 	PvzpHesitationBracket("Load Particle {}", theParticleFileName);
+ 	if (!DefinitionLoadXML(theParticleFileName, &gParticleDefMap, theParticleDef))
+ 	{
+-		PvzpErrorMessageBox(std::format("Failed to load particle '{}'", theParticleFileName), "Error");
++		PvzpErrorMessageBox(fmt::format("Failed to load particle '{}'", theParticleFileName), "Error");
+ 		return false;
+ 	}
+ 	else
+@@ -215,7 +214,7 @@ void PvzpParticleLoadDefinitions(const ParticleParams* theParticleParamArray, in
+ 		PVZP_ASSERT(aParticleParams.mParticleEffect == i);
+ 		if (!PvzpParticleLoadADef(&gParticleDefArray[i], aParticleParams.mParticleFileName))
+ 		{
+-			PvzpErrorMessageBox(std::format("Failed to load particle '{}'", aParticleParams.mParticleFileName), "Error");
++			PvzpErrorMessageBox(fmt::format("Failed to load particle '{}'", aParticleParams.mParticleFileName), "Error");
+ 		}
+ 		gSexyAppBase->mCompletedLoadingThreadTasks += 6;
+ 	}
+diff --git a/src/PvzpLib/PvzpStringFile.cpp b/src/PvzpLib/PvzpStringFile.cpp
+index 3cc24b4..4c62326 100644
+--- a/src/PvzpLib/PvzpStringFile.cpp
++++ b/src/PvzpLib/PvzpStringFile.cpp
+@@ -19,7 +19,6 @@
+  * along with PvZ-Portable. If not, see <https://www.gnu.org/licenses/>.
+  */
+ 
+-#include <format>
+ #include "PvzpDebug.h"
+ #include "PvzpCommon.h"
+ #include "PvzpStringFile.h"
+@@ -156,7 +155,7 @@ bool PvzpStringListReadFile(const char* theFileName)
+ void PvzpStringListLoad(const char* theFileName)
+ {
+ 	if (!PvzpStringListReadFile(theFileName))
+-		PvzpErrorMessageBox(std::format("Failed to load string list file '{}'", theFileName), "Error");
++		PvzpErrorMessageBox(fmt::format("Failed to load string list file '{}'", theFileName), "Error");
+ }
+ 
+ std::string_view PvzpStringListFind(std::string_view theName)
+diff --git a/src/PvzpLib/Reanimator.cpp b/src/PvzpLib/Reanimator.cpp
+index 3126c58..267fd32 100644
+--- a/src/PvzpLib/Reanimator.cpp
++++ b/src/PvzpLib/Reanimator.cpp
+@@ -33,7 +33,6 @@
+ #include "misc/PerfTimer.h"
+ #include "graphics/MemoryImage.h"
+ #include <algorithm>
+-#include <format>
+ 
+ constexpr const int NO_BASE_POSE = -2;
+ 
+@@ -1191,7 +1190,7 @@ void ReanimatorEnsureDefinitionLoaded(ReanimationType theReanimType, bool theIsP
+ 	PvzpHesitationBracket aHesitation("Load Reanim '{}'", aReanimParams->mReanimFileName);
+ 	if (!ReanimationLoadDefinition(aReanimParams->mReanimFileName, aReanimDef))
+ 	{
+-		PvzpErrorMessageBox(std::format("Failed to load reanim '{}'", aReanimParams->mReanimFileName), "Error");
++		PvzpErrorMessageBox(fmt::format("Failed to load reanim '{}'", aReanimParams->mReanimFileName), "Error");
+ 	}
+ 	int aDuration = aTimer.GetDuration();
+ 	if (aDuration > 100)  // report slow reanim loading
+@@ -1425,7 +1424,7 @@ void Reanimation::UpdateAttacherTrack(int theTrackIndex)
+ 	ReanimationType aReanimationType = ReanimationType::REANIM_NONE;
+ 	if (aAttacherInfo.mReanimName.size() != 0)
+ 	{
+-		std::string aReanimFileName = std::format("reanim/{}.reanim", aAttacherInfo.mReanimName);
++		std::string aReanimFileName = fmt::format("reanim/{}.reanim", aAttacherInfo.mReanimName);
+ 		for (unsigned int i = 0; i < gReanimationParamArraySize; i++)  // find the reanim type for this file name
+ 		{
+ 			const ReanimationParams* aParams = &gReanimationParamArray[i];
+diff --git a/src/PvzpLib/Trail.cpp b/src/PvzpLib/Trail.cpp
+index 7528c65..92ca202 100644
+--- a/src/PvzpLib/Trail.cpp
++++ b/src/PvzpLib/Trail.cpp
+@@ -22,7 +22,6 @@
+ #include "Trail.h"
+ #include "Definition.h"
+ #include <algorithm>
+-#include <format>
+ #include "graphics/Graphics.h"
+ #include "graphics/TriVertex.h"
+ 
+@@ -70,7 +69,7 @@ void TrailLoadDefinitions(TrailParams* theTrailParamArray, int theTrailParamArra
+ 		PVZP_ASSERT(aTrailParams->mTrailType == static_cast<TrailType>(i));
+ 		if (!TrailLoadADef(&gTrailDefArray[i], aTrailParams->mTrailFileName))
+ 		{
+-			PvzpErrorMessageBox(std::format("Failed to load trail '{}'", aTrailParams->mTrailFileName), "Error");
++			PvzpErrorMessageBox(fmt::format("Failed to load trail '{}'", aTrailParams->mTrailFileName), "Error");
+ 		}
+ 	}
+ }
+diff --git a/src/SexyAppFramework/Common.h b/src/SexyAppFramework/Common.h
+index 1e2e4a2..c92a4c9 100644
+--- a/src/SexyAppFramework/Common.h
++++ b/src/SexyAppFramework/Common.h
+@@ -38,7 +38,7 @@
+ #include <type_traits>
+ #include <bit>
+ #include <algorithm>
+-#include <format>
++#include <fmt/format.h>
+ 
+ #ifdef _MSC_VER
+ #include <intrin.h>
+@@ -133,15 +133,15 @@ void				DispatchLogLn(SexyLogPriority thePriority, std::string_view theText);
+ void				RegisterLogFileSink(std::string_view thePath);
+ 
+ template<typename... Args>
+-void				LogInfoLn(std::format_string<Args...> theFmt, Args&&... theArgs)
++void				LogInfoLn(fmt::format_string<Args...> theFmt, Args&&... theArgs)
+ {
+-	DispatchLogLn(SexyLogPriority::Info, std::vformat(theFmt.get(), std::make_format_args(theArgs...)));
++	DispatchLogLn(SexyLogPriority::Info, fmt::vformat(theFmt.get(), fmt::make_format_args(theArgs...)));
+ }
+ 
+ template<typename... Args>
+-void				LogErrorLn(std::format_string<Args...> theFmt, Args&&... theArgs)
++void				LogErrorLn(fmt::format_string<Args...> theFmt, Args&&... theArgs)
+ {
+-	DispatchLogLn(SexyLogPriority::Error, std::vformat(theFmt.get(), std::make_format_args(theArgs...)));
++	DispatchLogLn(SexyLogPriority::Error, fmt::vformat(theFmt.get(), fmt::make_format_args(theArgs...)));
+ }
+ 
+ int					Rand();
+diff --git a/src/SexyAppFramework/SexyAppBase.cpp b/src/SexyAppFramework/SexyAppBase.cpp
+index a7b1fb1..696b575 100644
+--- a/src/SexyAppFramework/SexyAppBase.cpp
++++ b/src/SexyAppFramework/SexyAppBase.cpp
+@@ -42,7 +42,6 @@
+ #include <memory>
+ #include <system_error>
+ #include <tuple>
+-#include <format>
+ 
+ #include <SDL.h>
+ 
+@@ -1556,7 +1555,7 @@ std::string SexyAppBase::GetGameSEHInfo()
+ 		"Version: " + mProductVersion + "\r\n";
+ 
+ 	anInfoString +=
+-		"Time Loaded: " + std::format("{:02}:{:02}:{:02}", (aSecLoaded/60/60), (aSecLoaded/60)%60, aSecLoaded%60) + "\r\n"
++		"Time Loaded: " + fmt::format("{:02}:{:02}:{:02}", (aSecLoaded/60/60), (aSecLoaded/60)%60, aSecLoaded%60) + "\r\n"
+ 		"Fullscreen: " + (mIsWindowed ? std::string("No") : std::string("Yes")) + "\r\n";
+ 
+ 	return anInfoString;
+@@ -3179,7 +3178,7 @@ static std::string GetTimestampedDemoFileName(std::string_view theDemoPrefix)
+ 	time_t aNow = time(nullptr);
+ 	tm aNowTM = *localtime(&aNow);
+ 
+-	std::string aBaseName = std::format("{}-{:04d}{:02d}{:02d}-{:02d}{:02d}{:02d}",
++	std::string aBaseName = fmt::format("{}-{:04d}{:02d}{:02d}-{:02d}{:02d}{:02d}",
+ 		theDemoPrefix, aNowTM.tm_year + 1900, aNowTM.tm_mon + 1, aNowTM.tm_mday, aNowTM.tm_hour, aNowTM.tm_min, aNowTM.tm_sec);
+ 	std::string aName = aBaseName + ".dmo";
+ 	const std::string aSuffixPrefix = aBaseName + '-';
+@@ -3189,7 +3188,7 @@ static std::string GetTimestampedDemoFileName(std::string_view theDemoPrefix)
+ 		if (aFileName == aName)
+ 			return aBaseName + "-2.dmo";
+ 		if (aFileName.starts_with(aSuffixPrefix))
+-			return std::format("{}-{}.dmo", aBaseName, atoi(aFileName.c_str() + aSuffixPrefix.length()) + 1);
++			return fmt::format("{}-{}.dmo", aBaseName, atoi(aFileName.c_str() + aSuffixPrefix.length()) + 1);
+ 	}
+ 
+ 	return aName;
+diff --git a/src/SexyAppFramework/graphics/ImageFont.cpp b/src/SexyAppFramework/graphics/ImageFont.cpp
+index e5b4abd..d1011de 100644
+--- a/src/SexyAppFramework/graphics/ImageFont.cpp
++++ b/src/SexyAppFramework/graphics/ImageFont.cpp
+@@ -30,7 +30,6 @@
+ #include "graphics/GLImage.h"
+ #include <algorithm>
+ #include <mutex>
+-#include <format>
+ #include "fcaseopen/fcaseopen.h"
+ 
+ using namespace Sexy;
+@@ -190,7 +189,7 @@ bool FontData::Error(const std::string& theError)
+ 
+ 		if (mCurrentLine.length() > 0)
+ 		{
+-			anErrorString += " on Line " + std::format("{}:\r\n\r\n", mCurrentLineNum) + mCurrentLine;
++			anErrorString += " on Line " + fmt::format("{}:\r\n\r\n", mCurrentLineNum) + mCurrentLine;
+ 		}
+ 
+ 		mApp->Popup(anErrorString);
+diff --git a/src/SexyAppFramework/misc/Buffer.cpp b/src/SexyAppFramework/misc/Buffer.cpp
+index 7ce9717..e90ef0b 100644
+--- a/src/SexyAppFramework/misc/Buffer.cpp
++++ b/src/SexyAppFramework/misc/Buffer.cpp
+@@ -26,7 +26,6 @@
+ #include <SDL_stdinc.h>
+ #include <array>
+ #include <bit>
+-#include <format>
+ constexpr const long POLYNOMIAL = 0x04c11db7L;
+ 
+ using namespace Sexy;
+@@ -110,7 +109,7 @@ std::string Buffer::ToWebString() const
+ 	int anOldReadBitPos = mReadBitPos;
+ 	mReadBitPos = 0;
+ 
+-	aString += std::format("{:08X}", static_cast<unsigned int>(aSizeBits));
++	aString += fmt::format("{:08X}", static_cast<unsigned int>(aSizeBits));
+ 
+ 	int aNumChars = (aSizeBits + 5) / 6;
+ 	for (int aCharNum = 0; aCharNum < aNumChars; aCharNum++)
+diff --git a/src/SexyAppFramework/misc/Debug.cpp b/src/SexyAppFramework/misc/Debug.cpp
+index 9db3bc6..49eb957 100644
+--- a/src/SexyAppFramework/misc/Debug.cpp
++++ b/src/SexyAppFramework/misc/Debug.cpp
+@@ -25,7 +25,6 @@
+ #include "Common.h"
+ #include "Debug.h"
+ 
+-#include <format>
+ #include <mutex>
+ 
+ #include <time.h>
+@@ -105,13 +104,13 @@ void SexyDumpUnfreed()
+ 		return;
+ 
+ 	time_t aTime = time(nullptr);
+-	std::string aHeader = std::format("Memory Leak Report for {}", asctime(localtime(&aTime)));
++	std::string aHeader = fmt::format("Memory Leak Report for {}", asctime(localtime(&aTime)));
+ 	aHeader.pop_back();
+ 	fprintf(f, "%s\n\n", aHeader.c_str());
+ 	Sexy::LogInfoLn("\n{}", aHeader);
+ 	for (SexyAllocMap::iterator i = gSexyAllocMap.begin(); i != gSexyAllocMap.end(); i++)
+ 	{
+-		std::string aLine = std::format("{}({}) : Leak {} byte{}", i->second.file, i->second.line, i->second.size, i->second.size > 1 ? "s" : "");
++		std::string aLine = fmt::format("{}({}) : Leak {} byte{}", i->second.file, i->second.line, i->second.size, i->second.size > 1 ? "s" : "");
+ 		Sexy::LogInfoLn("{}", aLine);
+ 		fprintf(f, "%s\n", aLine.c_str());
+ 
+@@ -126,7 +125,7 @@ void SexyDumpUnfreed()
+ 
+ 			if (count == 0)
+ 				aHexDump += '\t';
+-			aHexDump += std::format("{:02X} ", (unsigned int)_c);
++			aHexDump += fmt::format("{:02X} ", (unsigned int)_c);
+ 
+ 			if ((_c < 32) || (_c > 126))
+ 				_c = '.';
+@@ -141,7 +140,7 @@ void SexyDumpUnfreed()
+ 			if (++count == 16)
+ 			{
+ 				count = 0;
+-				std::string aDumpLine = std::format("{}\t{}\n", aHexDump, aAsciiDump);
++				std::string aDumpLine = fmt::format("{}\t{}\n", aHexDump, aAsciiDump);
+ 				fprintf(f, "%s", aDumpLine.c_str());
+ 
+ 				aHexDump.clear();
+@@ -175,7 +174,7 @@ void SexyDumpUnfreed()
+ 	std::string aSeparator = "-----------------------------------------------------------";
+ 	fprintf(f, "%s\n", aSeparator.c_str());
+ 	Sexy::LogInfoLn("{}", aSeparator);
+-	std::string aTotal = std::format("Total Unfreed: {} bytes ({}KB)", totalSize, totalSize / 1024);
++	std::string aTotal = fmt::format("Total Unfreed: {} bytes ({}KB)", totalSize, totalSize / 1024);
+ 	Sexy::LogInfoLn("{}", aTotal);
+ 	fprintf(f, "%s\n\n", aTotal.c_str());
+ 	fclose(f);
+diff --git a/src/SexyAppFramework/misc/PerfTimer.cpp b/src/SexyAppFramework/misc/PerfTimer.cpp
+index 24ac48f..84ad073 100644
+--- a/src/SexyAppFramework/misc/PerfTimer.cpp
++++ b/src/SexyAppFramework/misc/PerfTimer.cpp
+@@ -23,7 +23,6 @@
+  */
+ 
+ #include "PerfTimer.h"
+-#include <format>
+ #include <map>
+ #include <set>
+ #include <SDL.h>
+@@ -228,11 +227,11 @@ std::string SexyPerf::GetResults()
+ {
+ 	std::string aResult;
+ 
+-	aResult += std::format("Total Time: {:.2f}\n", gDuration);
++	aResult += fmt::format("Total Time: {:.2f}\n", gDuration);
+ 	for (PerfInfoSet::iterator anItr = gPerfInfoSet.begin(); anItr != gPerfInfoSet.end(); ++anItr)
+ 	{
+ 		const PerfInfo &anInfo = *anItr;
+-		aResult += std::format("{} ({} calls, %{:.2f} time): {:.2f} ({:.2f} avg, {:.2f} longest)\n", anInfo.mPerfName, anInfo.mCallCount, anInfo.mMillisecondDuration/gDuration*100, anInfo.mMillisecondDuration, anInfo.mMillisecondDuration/anInfo.mCallCount, anInfo.mLongestCall);
++		aResult += fmt::format("{} ({} calls, %{:.2f} time): {:.2f} ({:.2f} avg, {:.2f} longest)\n", anInfo.mPerfName, anInfo.mCallCount, anInfo.mMillisecondDuration/gDuration*100, anInfo.mMillisecondDuration, anInfo.mMillisecondDuration/anInfo.mCallCount, anInfo.mLongestCall);
+ 	}
+ 
+ 
+diff --git a/src/SexyAppFramework/misc/PropertiesParser.cpp b/src/SexyAppFramework/misc/PropertiesParser.cpp
+index bc838f4..4098b2e 100644
+--- a/src/SexyAppFramework/misc/PropertiesParser.cpp
++++ b/src/SexyAppFramework/misc/PropertiesParser.cpp
+@@ -25,7 +25,6 @@
+ #include "PropertiesParser.h"
+ #include "XMLParser.h"
+ #include <stdlib.h>
+-#include <format>
+ 
+ using namespace Sexy;
+ 
+@@ -43,8 +42,8 @@ void PropertiesParser::Fail(const std::string& theErrorText)
+ 		int aLineNum = mXMLParser->GetCurrentLineNum();
+ 
+ 		mError = theErrorText;
+-		if (aLineNum > 0) mError += std::format(" on Line {}", aLineNum);
+-		if (!mXMLParser->GetFileName().empty()) mError += std::format(" in File '{}'", mXMLParser->GetFileName());
++		if (aLineNum > 0) mError += fmt::format(" on Line {}", aLineNum);
++		if (!mXMLParser->GetFileName().empty()) mError += fmt::format(" in File '{}'", mXMLParser->GetFileName());
+ 	}
+ }
+ 
+diff --git a/src/SexyAppFramework/misc/ResourceManager.cpp b/src/SexyAppFramework/misc/ResourceManager.cpp
+index b39a1f4..234ac34 100644
+--- a/src/SexyAppFramework/misc/ResourceManager.cpp
++++ b/src/SexyAppFramework/misc/ResourceManager.cpp
+@@ -24,7 +24,6 @@
+ 
+ #include <memory>
+ #include <cassert>
+-#include <format>
+ #include "ResourceManager.h"
+ #include "XMLParser.h"
+ #include "sound/SoundManager.h"
+@@ -160,7 +159,7 @@ bool ResourceManager::Fail(const std::string& theErrorText)
+ 		mError = theErrorText;
+ 
+ 		if (aLineNum > 0)
+-			mError += std::format(" on Line {}", aLineNum);
++			mError += fmt::format(" on Line {}", aLineNum);
+ 
+ 		if (mXMLParser->GetFileName().length() > 0)
+ 			mError += " in File '" + mXMLParser->GetFileName() + "'";
+@@ -603,7 +602,7 @@ bool ResourceManager::LoadAlphaGridImage(ImageRes *theRes, GLImage *theImage)
+ {
+ 	ImageLib::Image* anAlphaImage = ImageLib::GetImage(theRes->mAlphaGridImage,true);
+ 	if (anAlphaImage==nullptr)
+-		return Fail(std::format("Failed to load image: {}", theRes->mAlphaGridImage));
++		return Fail(fmt::format("Failed to load image: {}", theRes->mAlphaGridImage));
+ 
+ 	std::unique_ptr<ImageLib::Image> aDelAlphaImage(anAlphaImage);
+ 
+@@ -615,7 +614,7 @@ bool ResourceManager::LoadAlphaGridImage(ImageRes *theRes, GLImage *theImage)
+ 
+ 
+ 	if (anAlphaImage->mWidth!=aCelWidth || anAlphaImage->mHeight!=aCelHeight)
+-		return Fail(std::format("GridAlphaImage size mismatch between {} and {}", theRes->mPath, theRes->mAlphaGridImage));
++		return Fail(fmt::format("GridAlphaImage size mismatch between {} and {}", theRes->mPath, theRes->mAlphaGridImage));
+ 
+ 	uint32_t *aMasterRowPtr = theImage->mBits.get();
+ 	for (int i=0; i < aNumRows; i++)
+@@ -653,12 +652,12 @@ bool ResourceManager::LoadAlphaImage(ImageRes *theRes, GLImage *theImage)
+ 	SEXY_PERF_END("ResourceManager::GetImage");
+ 
+ 	if (anAlphaImage==nullptr)
+-		return Fail(std::format("Failed to load image: {}", theRes->mAlphaImage));
++		return Fail(fmt::format("Failed to load image: {}", theRes->mAlphaImage));
+ 
+ 	std::unique_ptr<ImageLib::Image> aDelAlphaImage(anAlphaImage);
+ 
+ 	if (anAlphaImage->mWidth!=theImage->mWidth || anAlphaImage->mHeight!=theImage->mHeight)
+-		return Fail(std::format("AlphaImage size mismatch between {} and {}", theRes->mPath, theRes->mAlphaImage));
++		return Fail(fmt::format("AlphaImage size mismatch between {} and {}", theRes->mPath, theRes->mAlphaImage));
+ 
+ 	uint32_t* aBits1 = theImage->mBits.get();
+ 	uint32_t* aBits2 = anAlphaImage->mBits.get();
+@@ -692,7 +691,7 @@ bool ResourceManager::DoLoadImage(ImageRes *theRes)
+ 	GLImage* aGLImage = (GLImage*) aSharedImageRef;
+ 
+ 	if (aGLImage == nullptr)
+-		return Fail(std::format("Failed to load image: {}", theRes->mPath));
++		return Fail(fmt::format("Failed to load image: {}", theRes->mPath));
+ 
+ 	if (isNew)
+ 	{
+@@ -783,7 +782,7 @@ bool ResourceManager::DoLoadSound(SoundRes* theRes)
+ 		return Fail("Out of free sound ids");
+ 
+ 	if(!mApp->mSoundManager->LoadSound(aSoundId, aRes->mPath))
+-		return Fail(std::format("Failed to load sound: {}", aRes->mPath));
++		return Fail(fmt::format("Failed to load sound: {}", aRes->mPath));
+ 	SEXY_PERF_END("ResourceManager:LoadSound");
+ 
+ 	if (aRes->mVolume >= 0)
+@@ -826,7 +825,7 @@ bool ResourceManager::DoLoadFont(FontRes* theRes)
+ 	{
+ 		Image *anImage = mApp->GetImage(theRes->mImagePath);
+ 		if (anImage==nullptr)
+-			return Fail(std::format("Failed to load image: {}", theRes->mImagePath));
++			return Fail(fmt::format("Failed to load image: {}", theRes->mImagePath));
+ 
+ 		theRes->mImage.reset(anImage);
+ 		aFont = std::make_unique<ImageFont>(anImage, theRes->mPath);
+@@ -836,7 +835,7 @@ bool ResourceManager::DoLoadFont(FontRes* theRes)
+ 	if (anImageFont!=nullptr)
+ 	{
+ 		if (anImageFont->mFontData==nullptr || !anImageFont->mFontData->mInitialized)
+-			return Fail(std::format("Failed to load font: {}", theRes->mPath));
++			return Fail(fmt::format("Failed to load font: {}", theRes->mPath));
+ 
+ 		if (!theRes->mTags.empty())
+ 		{
+@@ -949,13 +948,13 @@ void ResourceManager::DumpCurResGroup(std::string& theDestStr)
+ {
+ 	const ResList* rl = &mResGroupMap.find(mCurResGroup)->second;
+ 	ResList::const_iterator it = rl->begin();
+-	theDestStr = std::format("About to dump {} elements from current res group name {}\r\n", rl->size(), mCurResGroup);
++	theDestStr = fmt::format("About to dump {} elements from current res group name {}\r\n", rl->size(), mCurResGroup);
+ 
+ 	ResList::const_iterator rl_end = rl->end();
+ 	while (it != rl_end)
+ 	{
+ 		BaseRes* br = *it++;
+-		std::string prefix = std::format("{}: {}\r\n", br->mId, br->mPath);
++		std::string prefix = fmt::format("{}: {}\r\n", br->mId, br->mPath);
+ 		theDestStr += prefix;
+ 		if (br->mFromProgram)
+ 			theDestStr += std::string("     res is from program\r\n");
+@@ -1069,7 +1068,7 @@ SharedImageRef ResourceManager::GetImageThrow(const std::string &theId)
+ 	}
+ 
+ 
+-	Fail(std::format("Image resource not found: {}", theId));
++	Fail(fmt::format("Image resource not found: {}", theId));
+ 	throw ResourceManagerException(GetErrorText());
+ }
+ 
+@@ -1087,7 +1086,7 @@ intptr_t	ResourceManager::GetSoundThrow(const std::string &theId)
+ 	}
+ 
+ 
+-	Fail(std::format("Sound resource not found: {}", theId));
++	Fail(fmt::format("Sound resource not found: {}", theId));
+ 	throw ResourceManagerException(GetErrorText());
+ }
+ 
+@@ -1104,7 +1103,7 @@ _Font* ResourceManager::GetFontThrow(const std::string &theId)
+ 			return nullptr;
+ 	}
+ 
+-	Fail(std::format("Font resource not found: {}", theId));
++	Fail(fmt::format("Font resource not found: {}", theId));
+ 	throw ResourceManagerException(GetErrorText());
+ }
+ 
+-- 
+2.50.1
+
